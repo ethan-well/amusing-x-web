@@ -15,6 +15,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Link from '@material-ui/core/Link';
 import HeaderDividers from './divider';
+import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   marginTop: {
@@ -123,6 +124,7 @@ export default function Join() {
               <TextField fullWidth id="standard-required" label="常用手机号" />
             </Grid>
           </Grid>
+
           <Grid className={classes.inputOuter}>
             <FormControl fullWidth>
               <InputLabel >请输入短信验证码</InputLabel>
@@ -138,13 +140,34 @@ export default function Join() {
               />
             </FormControl>
           </Grid>
-          <Grid className={classes.inputOuter} container spacing={3}>
-            <Grid item xs={6}>
-              <Button fullWidth variant="contained" color="primary" disableElevation>登录</Button>
-            </Grid>
-            <Grid item xs={6}>
-              <Button fullWidth variant="outlined">注册</Button>
-            </Grid>
+
+          <Grid
+            spacing={3}
+            className={classes.inputOuter}
+            container
+          >
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              disableElevation
+            >
+              注册
+            </Button>
+          </Grid>
+
+          <Grid container
+            className={classes.inputOuter}
+            direction="row"
+            justify="flex-end"
+            alignItems="center"
+          >
+            <Link
+              component={RouterLink}
+              to="/login"
+            >
+              已有账号，直接登录
+            </Link>
           </Grid>
         </Grid>
         <Grid item xs={4}></Grid>

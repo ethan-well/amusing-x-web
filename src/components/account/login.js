@@ -16,6 +16,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Link from '@material-ui/core/Link';
 import HeaderDividers from './divider';
 import Typography from '@material-ui/core/Typography';
+import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   marginTop: {
@@ -42,9 +43,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const [age, setAge] = React.useState('');
-  const [logWay, setLogWay] = React.useState('SMS')
+  const [logWay, setLogWay] = React.useState('password');
 
-  const classes = useStyles()
+  const classes = useStyles();
   const [values, setValues] = React.useState({
     amount: '',
     password: '',
@@ -66,7 +67,6 @@ export default function Login() {
   };
 
   const handlerLogWayChange = (event) => {
-    console.log("xxxxx", event.target.value);
     setLogWay(event.target.value);
   }
 
@@ -93,10 +93,10 @@ export default function Login() {
           {/* 登录方式选择 */}
           <Grid>
             <Typography className={classes.root}>
-              <Link component="button" underline="none" value="password" onClick={handlerLogWayChange} >
+              <Link component="button" underline="none" color={logWay == "password" ? "primary" : "inherit"} value="password" onClick={handlerLogWayChange} >
                 密码登录
               </Link>
-              <Link component="button" underline="none" value="sms" onClick={handlerLogWayChange} >
+              <Link component="button" underline="none" color={logWay == "sms" ? "primary" : "inherit"} value="sms" onClick={handlerLogWayChange} >
                 短信登录
               </Link>
             </Typography>
@@ -125,52 +125,56 @@ export default function Login() {
             </Grid>
           </Grid>
 
-          {/* 密码输入 */}
-          <Grid className={classes.inputOuter} item xs={12}>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="standard-adornment-password">请输入密码(6 到 8 位数字和大小写字母组成)</InputLabel>
-              <Input
-                id="standard-adornment-password"
-                type={values.showPassword ? 'text' : 'password'}
-                value={values.password}
-                onChange={handleChange('password')}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            </FormControl>
-          </Grid>
+          {logWay == "password" ?
+            // 密码
+            (<Grid className={classes.inputOuter} item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel htmlFor="standard-adornment-password">请输入密码(6 到 8 位数字和大小写字母组成)</InputLabel>
+                <Input
+                  id="standard-adornment-password"
+                  type={values.showPassword ? 'text' : 'password'}
+                  value={values.password}
+                  onChange={handleChange('password')}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              </FormControl>
+            </Grid>)
+            :
+            // 验证码登录
+            (<Grid className={classes.inputOuter}>
+              <FormControl fullWidth>
+                <InputLabel >请输入短信验证码</InputLabel>
+                <Input
+                  type="text"
+                  value={values.password}
+                  onChange={handleChange('password')}
+                  endAdornment={
+                    <Link underline="none" className={classes.inputEndAdornment} href="#">
+                      点击获取
+                </Link>
+                  }
+                />
+              </FormControl>
+            </Grid>)
+          }
 
-          {/* 验证码登录 */}
-          <Grid className={classes.inputOuter}>
-            <FormControl fullWidth>
-              <InputLabel >请输入短信验证码</InputLabel>
-              <Input
-                type="text"
-                value={values.password}
-                onChange={handleChange('password')}
-                endAdornment={
-                  <Link className={classes.inputEndAdornment} href="#">
-                    点击获取
-                  </Link>
-                }
-              />
-            </FormControl>
-          </Grid>
+          {/* 登录注册 button */}
           <Grid className={classes.inputOuter} container spacing={3}>
             <Grid item xs={6}>
-              <Button fullWidth variant="contained" color="primary" disableElevation>登录</Button>
+              <Button fullWidth variant="contained" color="primary" disableElevation component={RouterLink} to="/login">登录</Button>
             </Grid>
             <Grid item xs={6}>
-              <Button fullWidth variant="outlined">注册</Button>
+              <Button fullWidth variant="outlined" disableElevation component={RouterLink} to="/join" >注册</Button>
             </Grid>
           </Grid>
         </Grid>
