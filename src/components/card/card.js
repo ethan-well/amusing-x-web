@@ -8,10 +8,8 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import Image1 from './image1.jpeg';
 import { CreateOutlined, ThumbUpOutlined } from '@material-ui/icons';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { red } from '@material-ui/core/colors';
 import Tooltip from '@material-ui/core/Tooltip';
-import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import MultilineTextFields from "./multilineTextField";
 

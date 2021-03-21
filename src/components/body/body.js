@@ -1,6 +1,4 @@
 import React from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
 import ImgMediaCard from '../card/card';
@@ -29,10 +27,10 @@ function Body() {
           <Grid item xs={4}>
             <ImgMediaCard />
           </Grid>
-          <Grid className={classes.cardBox1} item xs={4}>
+          <Grid item className={classes.cardBox1} xs={4}>
             <ImgMediaCard />
           </Grid>
-          <Grid className={classes.carBox2} item xs={4} direction="row-reverse">
+          <Grid item className={classes.carBox2} xs={4}>
             <ImgMediaCard />
           </Grid>
         </Grid>

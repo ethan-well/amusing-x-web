@@ -18,7 +18,7 @@ function Header() {
     <Grid container spacing={3} style={{ height: '15vh' }}>
       <Grid item xs={1}></Grid>
       <Grid container justify="center" alignItems="center" item xs={3}>
-        <Grid item justify="center" alignContent='center' alignItems="center" xs={4}>
+        <Grid item xs={4}>
           <Link href="#" underline='none' align='center' display='block' onClick={handlleFunc} color="inherit">
             美食
           </Link>
@@ -41,7 +41,7 @@ function Header() {
         </FormControl>
       </Grid>
       <Grid container justify="center" alignItems="center" item xs={3}>
-        <Grid container justify="center" direction="row" alignItems="center" xs={4}>
+        <Grid container item justify="center" direction="row" alignItems="center" xs={4}>
           <Grid item>
             <AMAvatars />
           </Grid>
