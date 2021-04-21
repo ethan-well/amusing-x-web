@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -16,6 +16,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Link from '@material-ui/core/Link';
 import HeaderDividers from './divider';
 import { Link as RouterLink } from 'react-router-dom';
+import useDataApi from '../../api/APIUtils'
 
 const useStyles = makeStyles((theme) => ({
   marginTop: {
@@ -32,15 +33,17 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function Join() {
-  const [age, setAge] = React.useState('');
+export default function Join(props) {
+  const classes = useStyles();
 
-  const classes = useStyles()
-  const [values, setValues] = React.useState({
-    amount: '',
+  const [{ data, isLoading, isError }, doFetch] = useDataApi(`country/list`, {"result": []});
+
+  const [values, setValues] = useState({
+    nickname: '',
     password: '',
-    weight: '',
-    weightRange: '',
+    area_code: '',
+    phone: '',
+    verification_code: '',
     showPassword: false,
   });
 
@@ -60,6 +63,8 @@ export default function Join() {
     <React.Fragment>
       <Header />
 
+      {isError && <div>Something went wrong ...</div>}
+
       {/* 分割线 */}
       <Grid container className={classes.marginTop}>
         <Grid item xs={3}>
@@ -77,7 +82,9 @@ export default function Join() {
         <Grid item xs={4}>
 
           <Grid className={classes.inputOuter} item xs={12}>
-            <TextField fullWidth id="standard-required" label="请输入昵称" />
+            <TextField fullWidth id="standard-required" label="请输入昵称"
+              value={values.nickname}
+              onChange={handleChange('nickname')} />
           </Grid>
 
           <Grid className={classes.inputOuter} item xs={12}>
@@ -110,18 +117,25 @@ export default function Join() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={age}
-                  onChange={handleChange}
+                  value={values.area_code}
+                  onChange={handleChange('area_code')}
                 >
-                  <MenuItem value={10}>中国大陆</MenuItem>
-                  <MenuItem value={30}>中国澳门</MenuItem>
-                  <MenuItem value={30}>中国香港</MenuItem>
-                  <MenuItem value={20}>中国台湾</MenuItem>
+                  {/* 区号列表 */}
+                  {isLoading ? (
+                    <div>Loading ...</div>
+                  ) : (data.result.map(item => (
+                    <MenuItem key={item.cname} value={item.country_code}>{item.cname}</MenuItem>
+                  )))}
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={8}>
-              <TextField fullWidth id="standard-required" label="常用手机号" />
+              <TextField
+                fullWidth
+                id="standard-required"
+                label="常用手机号"
+                onChange={handleChange('phone')}
+              />
             </Grid>
           </Grid>
 
@@ -130,8 +144,8 @@ export default function Join() {
               <InputLabel >请输入短信验证码</InputLabel>
               <Input
                 type="text"
-                value={values.password}
-                onChange={handleChange('password')}
+                value={values.verification_code}
+                onChange={handleChange('verification_code')}
                 endAdornment={
                   <Link className={classes.inputEndAdornment} href="#">
                     点击获取
