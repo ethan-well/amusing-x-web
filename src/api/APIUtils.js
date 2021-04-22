@@ -1,6 +1,7 @@
 import { useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
 
+// @ts-ignore
 const dataFetchReducer = (state, action) => {
   switch (action.type) {
     case 'FETCH_INIT':
@@ -27,8 +28,10 @@ const dataFetchReducer = (state, action) => {
   }
 };
 
+// @ts-ignore
 const useDataApi = (query, initialData) => {
   const [url, setUrl] = useState(`http://localhost:3000/v1/amusinguserserv/${query}`);
+
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: false,
@@ -40,16 +43,19 @@ const useDataApi = (query, initialData) => {
     let didCancel = false;
 
     const fetchData = async () => {
+      // @ts-ignore
       dispatch({ type: 'FETCH_INIT' });
 
       try {
         const result = await axios(url);
 
         if (!didCancel) {
+          // @ts-ignore
           dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
         }
       } catch (error) {
         if (!didCancel) {
+          // @ts-ignore
           dispatch({ type: 'FETCH_FAILURE' });
         }
       }
