@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -16,7 +16,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Link from '@material-ui/core/Link';
 import HeaderDividers from './divider';
 import Typography from '@material-ui/core/Typography';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
+import useDataApi from '../../api/APIUtils.js';
+import { SubmitLoginForm } from './submit';
 
 const useStyles = makeStyles((theme) => ({
   marginTop: {
@@ -24,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
   },
   inputOuter: {
     marginTop: theme.spacing(3),
+  },
+  inputOuterError: {
+    marginTop: theme.spacing(0),
   },
   inputOuter1: {
     marginTop: theme.spacing(1),
@@ -34,6 +39,12 @@ const useStyles = makeStyles((theme) => ({
   inputEndAdornment: {
     minWidth: '8ch'
   },
+  primaryColor: {
+    color: "#2196F3",
+  },
+  secondaryColor: {
+    color: "#FE6B8B",
+  },
   root: {
     '& > * + *': {
       marginLeft: theme.spacing(2),
@@ -42,32 +53,47 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Login() {
-  const [age, setAge] = React.useState('');
-  const [logWay, setLogWay] = React.useState('password');
+  let history = useHistory();
 
   const classes = useStyles();
-  const [values, setValues] = React.useState({
-    amount: '',
+  const [state, setValues] = React.useState({
+    phone: '',
+    area_code: '',
     password: '',
-    weight: '',
-    weightRange: '',
+    type: 0,
     showPassword: false,
   });
 
+  const [loginSubmited, setLoginSubmited] = useState(false)
+  const [loginResult, setLoginResult] = useState({})
+
+  // 获取区号
+  const [{ data, isLoading, isError }, doFetch] = useDataApi(`country/list`, { "result": [] }, true);
+
   const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
+    setValues({ ...state, [prop]: event.target.value });
   };
 
   const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
+    setValues({ ...state, showPassword: !state.showPassword });
   };
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
 
-  const handlerLogWayChange = (event) => {
-    setLogWay(event.target.value);
+  const loginCallBack = (result) => {
+    console.info(result);
+    setLoginSubmited(true)
+    setLoginResult(result);
+    if (result.succeed) {
+      history.push("/");
+    }
+  }
+
+  const handleLoginSubmit = (event) => {
+    event.preventDefault();
+    SubmitLoginForm(state, loginCallBack);
   }
 
   return (
@@ -93,10 +119,10 @@ export default function Login() {
           {/* 登录方式选择 */}
           <Grid>
             <Typography className={classes.root}>
-              <Link component="button" underline="none" color={logWay == "password" ? "primary" : "inherit"} value="password" onClick={handlerLogWayChange} >
+              <Link component="button" underline="none" color={state.type == 0 ? "primary" : "inherit"} value={0} onClick={handleChange("type")} >
                 密码登录
               </Link>
-              <Link component="button" underline="none" color={logWay == "sms" ? "primary" : "inherit"} value="sms" onClick={handlerLogWayChange} >
+              <Link component="button" underline="none" color={state.type == 1 ? "primary" : "inherit"} value={1} onClick={handleChange("type")} >
                 短信登录
               </Link>
             </Typography>
@@ -110,30 +136,38 @@ export default function Login() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={age}
-                  onChange={handleChange}
+                  value={state.area_code}
+                  onChange={handleChange('area_code')}
                 >
-                  <MenuItem value={10}>中国大陆</MenuItem>
-                  <MenuItem value={30}>中国澳门</MenuItem>
-                  <MenuItem value={30}>中国香港</MenuItem>
-                  <MenuItem value={20}>中国台湾</MenuItem>
+                  {/* 区号列表 */}
+                  {isLoading ? (
+                    <div>Loading ...</div>
+                    // @ts-ignore
+                  ) : (data.result.map(item => (
+                    <MenuItem key={item.cname} value={item.country_code}>{item.cname}</MenuItem>
+                  )))}
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={8}>
-              <TextField fullWidth id="standard-required" label="常用手机号" />
+              <TextField
+                fullWidth
+                id="standard-required"
+                label="常用手机号"
+                onChange={handleChange('phone')}
+              />
             </Grid>
           </Grid>
 
-          {logWay == "password" ?
+          {state.type == 0 ?
             // 密码
             (<Grid className={classes.inputOuter} item xs={12}>
               <FormControl fullWidth>
                 <InputLabel htmlFor="standard-adornment-password">请输入密码(6 到 8 位数字和大小写字母组成)</InputLabel>
                 <Input
                   id="standard-adornment-password"
-                  type={values.showPassword ? 'text' : 'password'}
-                  value={values.password}
+                  type={state.showPassword ? 'text' : 'password'}
+                  value={state.password}
                   onChange={handleChange('password')}
                   endAdornment={
                     <InputAdornment position="end">
@@ -142,7 +176,7 @@ export default function Login() {
                         onClick={handleClickShowPassword}
                         onMouseDown={handleMouseDownPassword}
                       >
-                        {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                        {state.showPassword ? <Visibility /> : <VisibilityOff />}
                       </IconButton>
                     </InputAdornment>
                   }
@@ -156,22 +190,39 @@ export default function Login() {
                 <InputLabel >请输入短信验证码</InputLabel>
                 <Input
                   type="text"
-                  value={values.password}
+                  value={state.password}
                   onChange={handleChange('password')}
                   endAdornment={
                     <Link underline="none" className={classes.inputEndAdornment} href="#">
                       点击获取
-                </Link>
+                    </Link>
                   }
                 />
               </FormControl>
             </Grid>)
           }
 
+          {loginSubmited && loginResult &&
+            <Grid className={classes.inputOuter} container>
+              <Grid item xs={6} className={loginResult.succeed ? classes.primaryColor : classes.secondaryColor}>
+                {loginResult.succeed && "登陆成功"}
+                {!loginResult.succeed && loginResult.error_info && loginResult.error_info.message}
+              </Grid>
+            </Grid>
+          }
+
           {/* 登录注册 button */}
           <Grid className={classes.inputOuter} container spacing={3}>
             <Grid item xs={6}>
-              <Button fullWidth variant="contained" color="primary" disableElevation component={RouterLink} to="/login">登录</Button>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                onClick={handleLoginSubmit}
+                disableElevation
+              >
+                登录
+              </Button>
             </Grid>
             <Grid item xs={6}>
               <Button fullWidth variant="outlined" disableElevation component={RouterLink} to="/join" >注册</Button>

@@ -29,9 +29,8 @@ const dataFetchReducer = (state, action) => {
 };
 
 // @ts-ignore
-const useDataApi = (query, initialData) => {
+const useDataApi = (query, initialData, doNow) => {
   const [url, setUrl] = useState(`http://localhost:3000/v1/amusinguserserv/${query}`);
-
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: false,
@@ -61,12 +60,14 @@ const useDataApi = (query, initialData) => {
       }
     };
 
-    fetchData();
+    if (doNow) {
+      fetchData();
+    }
 
     return () => {
       didCancel = true;
     };
-  }, [url]);
+  }, [url, doNow]);
 
   return [state, setUrl];
 };

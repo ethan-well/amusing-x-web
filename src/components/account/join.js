@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useReducer, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -15,8 +15,11 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Link from '@material-ui/core/Link';
 import HeaderDividers from './divider';
-import { Link as RouterLink } from 'react-router-dom';
-import useDataApi from '../../api/APIUtils.js'
+import { Link as RouterLink, useHistory } from 'react-router-dom';
+import useDataApi from '../../api/APIUtils.js';
+import VericationCodeApp from './verication_code';
+import JoinReducer from './joinReducer';
+import { SubmitJoinForm } from './submit'
 
 const useStyles = makeStyles((theme) => ({
   marginTop: {
@@ -29,34 +32,68 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(0),
   },
   inputEndAdornment: {
-    minWidth: '8ch'
+    minWidth: '11ch'
+  },
+  codeInputEndAdornment: {
+    minWidth: '11ch'
   }
 }));
 
+// @ts-ignore
 export default function Join(props) {
   const classes = useStyles();
+  let history = useHistory();
 
-  const [{ data, isLoading, isError }, doFetch] = useDataApi(`country/list`, {"result": []});
 
-  const [values, setValues] = useState({
-    nickname: '',
-    password: '',
-    area_code: '',
-    phone: '',
-    verification_code: '',
-    showPassword: false,
+  // @ts-ignore
+  const [{ data, isLoading, isError }, doFetch] = useDataApi(`country/list`, { "result": [] }, true);
+
+  const [joinData, setValues] = useState({
+    nickname: { value: '', errMsg: '', show: true },
+    password: { value: '', errMsg: '', show: false },
+    area_code: { value: '', errMsg: '', show: true },
+    phone: { value: '', errMsg: '', show: true },
+    verification_code: { value: '', errMsg: '', show: true },
   });
 
+  const [joinResult, setJointResult] = useState({
+    isLoading: false,
+    result: {},
+  })
+
+  useEffect(() => {
+    if (joinResult.result && joinResult.result.succeed) {
+      history.push('/login')
+    }
+
+  }, [history, joinResult])
+
+  // @ts-ignore
   const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
+    setValues({ ...joinData, [prop]: { ...joinData[prop], value: event.target.value } });
+    dispatch({ type: 'CHANGE_DATA', prop: prop, value: event.target.value })
   };
 
   const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
+    setValues({ ...joinData, password: { ...joinData.password, show: !joinData.password.show } });
   };
 
+  // @ts-ignore
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
+  };
+
+  const [state, dispatch] = useReducer(JoinReducer, joinData);
+
+  const callback = (resp) => {
+    setJointResult({ isLoading: false, result: resp });
+  }
+
+  // @ts-ignore
+  const handleJoinSubmit = (event) => {
+    // dispatch({ type: 'JOIN_SUBMIT' });
+    event.preventDefault();
+    SubmitJoinForm(state, callback);
   };
 
   return (
@@ -83,7 +120,7 @@ export default function Join(props) {
 
           <Grid className={classes.inputOuter} item xs={12}>
             <TextField fullWidth id="standard-required" label="请输入昵称"
-              value={values.nickname}
+              value={joinData.nickname.value}
               onChange={handleChange('nickname')} />
           </Grid>
 
@@ -92,8 +129,8 @@ export default function Join(props) {
               <InputLabel htmlFor="standard-adornment-password">请输入密码(6 到 8 位数字和大小写字母组成)</InputLabel>
               <Input
                 id="standard-adornment-password"
-                type={values.showPassword ? 'text' : 'password'}
-                value={values.password}
+                type={joinData.password.show ? 'text' : 'password'}
+                value={joinData.password.value}
                 onChange={handleChange('password')}
                 endAdornment={
                   <InputAdornment position="end">
@@ -102,7 +139,7 @@ export default function Join(props) {
                       onClick={handleClickShowPassword}
                       onMouseDown={handleMouseDownPassword}
                     >
-                      {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                      {joinData.password.show ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
                 }
@@ -117,12 +154,13 @@ export default function Join(props) {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={values.area_code}
+                  value={joinData.area_code.value}
                   onChange={handleChange('area_code')}
                 >
                   {/* 区号列表 */}
                   {isLoading ? (
                     <div>Loading ...</div>
+                    // @ts-ignore
                   ) : (data.result.map(item => (
                     <MenuItem key={item.cname} value={item.country_code}>{item.cname}</MenuItem>
                   )))}
@@ -144,19 +182,23 @@ export default function Join(props) {
               <InputLabel >请输入短信验证码</InputLabel>
               <Input
                 type="text"
-                value={values.verification_code}
+                className={classes.codeInputEndAdornment}
+                value={joinData.verification_code.value}
                 onChange={handleChange('verification_code')}
-                endAdornment={
-                  <Link className={classes.inputEndAdornment} href="#">
-                    点击获取
-                  </Link>
-                }
+                endAdornment={<VericationCodeApp />}
               />
             </FormControl>
           </Grid>
 
           <Grid
-            spacing={3}
+            className={classes.inputOuter}
+            container
+          >
+            {joinResult.result && joinResult.result.succeed && "注册成功"}
+            {joinResult.result && !joinResult.result.succeed && joinResult.result.error_info && String(joinResult.result.error_info.message)}
+          </Grid>
+
+          <Grid
             className={classes.inputOuter}
             container
           >
@@ -164,6 +206,7 @@ export default function Join(props) {
               fullWidth
               variant="contained"
               color="primary"
+              onClick={handleJoinSubmit}
               disableElevation
             >
               注册
@@ -184,7 +227,8 @@ export default function Join(props) {
             </Link>
           </Grid>
         </Grid>
-        <Grid item xs={4}></Grid>
+        <Grid item xs={4}>
+        </Grid>
       </Grid>
     </React.Fragment>
   );
