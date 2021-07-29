@@ -3,6 +3,7 @@ import Home from "../components/home/home";
 // import Join from "../components/account/join";
 import JoinContainer from "../container/account/JoinContainer";
 import Login from "../components/account/login";
+import FindPasswordContainer from "../components/account/find_password";
 
 import {
   BrowserRouter as Router,
@@ -23,6 +24,9 @@ export default function AMSRouter() {
         </Route>
         <Route path="/join">
           <JoinContainer />
+        </Route>
+        <Route path="/reset_password">
+          <FindPasswordContainer />
         </Route>
       </Switch>
     </Router>

@@ -12,12 +12,12 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import Link from '@material-ui/core/Link';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import HeaderDividers from './divider';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import VericationCodeApp from './verication_code';
 import JoinReducer from './joinReducer';
-import { SubmitJoinForm, RequestData } from './submit'
+import { SubmitResetPasswordForm, RequestData } from './submit'
 
 const useStyles = makeStyles((theme) => ({
   marginTop: {
@@ -54,8 +54,7 @@ export default function Join(props) {
   let history = useHistory();
 
   // 注册表单数据
-  const [joinData, setValues] = useState({
-    nickname: { value: '', errMsg: '', show: true },
+  const [findPasswordData, setValues] = useState({
     password: { value: '', errMsg: '', show: false },
     area_code: { value: '', errMsg: '', show: true },
     phone: { value: '', errMsg: '', show: true },
@@ -64,7 +63,6 @@ export default function Join(props) {
 
   // 表单验证数据
   const [paramsErrMsg, setParamsErrMsg] = useState({
-    nickname: { errMsg: '', show: false, valid: false },
     password: { errMsg: '', show: false, valid: false },
     area_code: { errMsg: '', show: false, valid: false },
     phone: { errMsg: '', show: false, valid: false },
@@ -72,7 +70,7 @@ export default function Join(props) {
   })
 
   // 登陆结果
-  const [joinResult, setJointResult] = useState({
+  const [findPasswordDataResult, setfindPasswordDataResult] = useState({
     isLoading: false,
     result: {},
   });
@@ -83,6 +81,7 @@ export default function Join(props) {
     result: {},
   });
   const getRegexpsCallback = (data) => {
+    console.info("data", data);
     setRegexps(data);
   }
   useEffect(() => {
@@ -102,18 +101,12 @@ export default function Join(props) {
     RequestData('country/list', getAreaCodeListCallback)
   }, []);
 
-
-  const sleep = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
   useEffect(() => {
-    if (joinResult.result && joinResult.result.succeed) {
-      sleep(3000);
+    if (findPasswordDataResult.result && findPasswordDataResult.result.succeed) {
       history.push('/login');
     }
 
-  }, [history, joinResult]);
+  }, [history, findPasswordDataResult]);
 
 
   const [currentEdit, setCurrentEdit] = useState("");
@@ -121,7 +114,7 @@ export default function Join(props) {
   const handleChange = (prop) => (event) => {
     setCurrentEdit(prop);
 
-    setValues({ ...joinData, [prop]: { ...joinData[prop], value: event.target.value } });
+    setValues({ ...findPasswordData, [prop]: { ...findPasswordData[prop], value: event.target.value } });
     dispatch({ type: 'CHANGE_DATA', prop: prop, value: event.target.value })
   };
 
@@ -132,7 +125,7 @@ export default function Join(props) {
 
   useEffect(() => {
     ValidPropByRegexpsOnBlur(currentEdit)
-  }, [joinData, currentEdit, currentOnBlurField]);
+  }, [findPasswordData, currentEdit, currentOnBlurField]);
 
   const ValidPropByRegexpsOnBlur = (prop) => {
     if (currentOnBlurField != prop) {
@@ -143,6 +136,8 @@ export default function Join(props) {
   }
 
   const ValidPropByRegexps = (prop) => {
+    console.info(prop, findPasswordData[prop], regexps.result)
+
     if (!regexps || !regexps.result) {
       return true
     }
@@ -153,7 +148,7 @@ export default function Join(props) {
     };
 
     if (regexpMap[prop]) {
-      let match = joinData[prop].value.match(regexpMap[prop].rules);
+      let match = findPasswordData[prop].value.match(regexpMap[prop].rules);
       if (match) {
         setParamsErrMsg({ ...paramsErrMsg, [prop]: { errMsg: '', show: false, valid: true } });
         return true
@@ -167,7 +162,7 @@ export default function Join(props) {
   };
 
   const handleClickShowPassword = () => {
-    setValues({ ...joinData, password: { ...joinData.password, show: !joinData.password.show } });
+    setValues({ ...findPasswordData, password: { ...findPasswordData.password, show: !findPasswordData.password.show } });
   };
 
   // @ts-ignore
@@ -175,10 +170,11 @@ export default function Join(props) {
     event.preventDefault();
   };
 
-  const [state, dispatch] = useReducer(JoinReducer, joinData);
+  const [state, dispatch] = useReducer(JoinReducer, findPasswordData);
 
-  const callback = (resp) => {
-    setJointResult({ isLoading: false, result: resp });
+  const submitResetPasswordFormCallback = (resp) => {
+    console.info("reset password resp:", resp);
+    setfindPasswordDataResult({ isLoading: false, result: resp });
   }
 
   // @ts-ignore
@@ -188,11 +184,11 @@ export default function Join(props) {
       return
     }
 
-    SubmitJoinForm(state, callback);
+    SubmitResetPasswordForm(state, submitResetPasswordFormCallback);
   };
 
   const ValidPropByRegexpsOnSubmitForm = () => {
-    let keys = ['nickname', 'password', 'area_code', 'phone', 'verification_code']
+    let keys = ['area_code', 'phone', 'verification_code', 'password']
 
     for (let key of keys) {
       if (!ValidPropByRegexps(key)) {
@@ -208,12 +204,12 @@ export default function Join(props) {
       <Header />
       {/* 分割线 */}
       <Grid container className={classes.marginTop}>
-        <Grid item xs={3}>
+        <Grid item xs={2}>
         </Grid>
-        <Grid item xs={6}>
-          <HeaderDividers name="注册" />
+        <Grid item xs={8}>
+          <HeaderDividers name="找回密码" />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={2}>
         </Grid>
       </Grid>
 
@@ -221,52 +217,17 @@ export default function Join(props) {
       <Grid container>
         <Grid item xs={4}></Grid>
         <Grid item xs={4}>
-          <Grid className={classes.inputOuter} item xs={12}>
-            <TextField fullWidth id="standard-required" label="昵称"
-              value={joinData.nickname.value}
-              onChange={handleChange('nickname')}
-              onBlur={onBlurField('nickname')}
-              error={paramsErrMsg['nickname'].show}
-              helperText={paramsErrMsg['nickname'].show && paramsErrMsg['nickname'].errMsg}
-            />
-          </Grid>
-
-          <Grid className={classes.inputOuter} item xs={12}>
-            <FormControl fullWidth>
-              <TextField
-                label="密码"
-                id="standard-adornment-password"
-                type={joinData.password.show ? 'text' : 'password'}
-                error={paramsErrMsg['password'].show}
-                value={joinData.password.value}
-                onBlur={onBlurField('password')}
-                onChange={handleChange('password')}
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {joinData.password.show ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }}
-                helperText={paramsErrMsg['password'].show && paramsErrMsg['password'].errMsg}
-              />
-            </FormControl>
-          </Grid>
 
           <Grid container className={classes.inputOuter} spacing={0} item>
             <Grid item xs={4}>
-              <FormControl fullWidth className={classes.formControl}>
+              <FormControl fullWidth className={classes.formControl} error={paramsErrMsg['area_code'].show}>
                 <InputLabel id="demo-simple-select-label">区号</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={joinData.area_code.value}
+                  value={findPasswordData.area_code.value}
                   onChange={handleChange('area_code')}
+                  onBlur={onBlurField('area_code')}
                 >
                   {/* 区号列表 */}
                   {!areaCodeList.succeed ? (
@@ -276,6 +237,8 @@ export default function Join(props) {
                     <MenuItem key={item.cname} value={item.country_code}>{item.cname}</MenuItem>
                   )))}
                 </Select>
+                <FormHelperText>{paramsErrMsg['area_code'].errMsg}</FormHelperText>
+
               </FormControl>
             </Grid>
             <Grid item xs={8}>
@@ -298,7 +261,7 @@ export default function Join(props) {
                 label="验证码"
                 type="text"
                 className={classes.codeInputEndAdornment}
-                value={joinData.verification_code.value}
+                value={findPasswordData.verification_code.value}
                 onChange={handleChange('verification_code')}
                 onBlur={onBlurField('verification_code')}
                 InputProps={{
@@ -310,10 +273,38 @@ export default function Join(props) {
             </FormControl>
           </Grid>
 
+          <Grid className={classes.inputOuter} item xs={12}>
+            <FormControl fullWidth>
+              <TextField
+                label="新密码"
+                id="standard-adornment-password"
+                type={findPasswordData.password.show ? 'text' : 'password'}
+                error={paramsErrMsg['password'].show}
+                value={findPasswordData.password.value}
+                onBlur={onBlurField('password')}
+                onChange={handleChange('password')}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {findPasswordData.password.show ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                }}
+                helperText={paramsErrMsg['password'].show && paramsErrMsg['password'].errMsg}
+              />
+            </FormControl>
+          </Grid>
+
+
           <Grid className={classes.inputOuter} container>
-            <Grid item xs={6} className={joinResult.result && joinResult.result.succeed ? classes.primaryColor : classes.secondaryColor} >
-              {joinResult.result && joinResult.result.succeed && "注册成功"}
-              {joinResult.result && !joinResult.result.succeed && joinResult.result.error_info && String(joinResult.result.error_info.message)}
+            <Grid item xs={6} className={findPasswordDataResult.result && findPasswordDataResult.result.succeed ? classes.primaryColor : classes.secondaryColor} >
+              {findPasswordDataResult.result && findPasswordDataResult.result.succeed && "注册成功"}
+              {findPasswordDataResult.result && !findPasswordDataResult.result.succeed && findPasswordDataResult.result.error_info && String(findPasswordDataResult.result.error_info.message)}
             </Grid>
           </Grid>
 
@@ -328,22 +319,8 @@ export default function Join(props) {
               onClick={handleJoinSubmit}
               disableElevation
             >
-              注册
+              重置密码
             </Button>
-          </Grid>
-
-          <Grid container
-            className={classes.inputOuter}
-            direction="row"
-            justify="flex-end"
-            alignItems="center"
-          >
-            <Link
-              component={RouterLink}
-              to="/login"
-            >
-              已有账号，直接登录
-            </Link>
           </Grid>
         </Grid>
         <Grid item xs={4}>

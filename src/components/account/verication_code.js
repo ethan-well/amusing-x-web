@@ -19,12 +19,11 @@ const GetCode = () => {
     const newTodo = await get('/verification_code')
     if (response.ok) {
       setTodos(newTodo)
-      console.info(todos)
     }
   }, [get, todos, response])
 
   return (
-    <Link  component="button" variant="body2" className={classes.codeInputEndAdornment} onClick={addNewTodo}>
+    <Link component="button" variant="body2" className={classes.codeInputEndAdornment} onClick={addNewTodo}>
       获取验证码
     </Link>
   )

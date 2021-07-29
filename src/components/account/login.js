@@ -83,7 +83,6 @@ export default function Login() {
   };
 
   const loginCallBack = (result) => {
-    console.info(result);
     setLoginSubmited(true)
     setLoginResult(result);
     if (result.succeed) {
@@ -94,6 +93,11 @@ export default function Login() {
   const handleLoginSubmit = (event) => {
     event.preventDefault();
     SubmitLoginForm(state, loginCallBack);
+  }
+
+  const HandlerForgetPasswordClick = (event) => {
+    event.preventDefault();
+    history.push("/reset_password");
   }
 
   return (
@@ -210,6 +214,16 @@ export default function Login() {
               </Grid>
             </Grid>
           }
+
+          <Grid container>
+            <Link
+              component="button"
+              variant="body2"
+              onClick={HandlerForgetPasswordClick}
+            >
+              忘记密码？
+            </Link>
+          </Grid>
 
           {/* 登录注册 button */}
           <Grid className={classes.inputOuter} container spacing={3}>

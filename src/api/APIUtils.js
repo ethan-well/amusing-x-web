@@ -11,12 +11,14 @@ const dataFetchReducer = (state, action) => {
         isError: false
       };
     case 'FETCH_SUCCESS':
-      return {
+      const data = {
         ...state,
         isLoading: false,
         isError: false,
         data: action.payload,
       };
+      console.info('data', data);
+      return data;
     case 'FETCH_FAILURE':
       return {
         ...state,

@@ -39,8 +39,6 @@ const SubmitLoginForm = (state, callback) => {
     body[key] = state[key]
   }
 
-  console.info("body", body);
-
   fetch('http://localhost:3000/v1/amusinguserserv/login', {
     method: 'POST',
     headers: {
@@ -64,4 +62,52 @@ const SubmitLoginForm = (state, callback) => {
     });
 }
 
-export { SubmitJoinForm, SubmitLoginForm }
+const SubmitResetPasswordForm = (state, callback) => {
+  let body = Object.create({});
+  Object.keys(state).map(key => {
+    body[key] = state[key].value
+  })
+
+  console.info("body", body);
+
+  fetch('http://localhost:3000/v1/amusinguserserv/reset_password', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  })
+    .then(resp => resp.json())
+    .then(data => {
+      callback(data);
+    })
+    .catch(err => {
+      let result = {
+        succeed: false,
+        err_info: {
+          code: "C0001",
+          message: err,
+        },
+      };
+      callback(result)
+    });
+}
+
+const RequestData = (url, callback) => {
+  fetch(`http://localhost:3000/v1/amusinguserserv/${url}`)
+    .then(resp => resp.json())
+    .then(data => {
+      callback(data)
+    }).catch(err => {
+      let result = {
+        succeed: false,
+        err_info: {
+          code: "C0001",
+          message: err,
+        },
+      };
+      callback(result)
+    });
+}
+
+export { SubmitJoinForm, SubmitLoginForm, SubmitResetPasswordForm, RequestData }
