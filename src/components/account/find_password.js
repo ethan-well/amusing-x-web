@@ -81,7 +81,6 @@ export default function Join(props) {
     result: {},
   });
   const getRegexpsCallback = (data) => {
-    console.info("data", data);
     setRegexps(data);
   }
   useEffect(() => {
@@ -136,8 +135,6 @@ export default function Join(props) {
   }
 
   const ValidPropByRegexps = (prop) => {
-    console.info(prop, findPasswordData[prop], regexps.result)
-
     if (!regexps || !regexps.result) {
       return true
     }
@@ -173,7 +170,6 @@ export default function Join(props) {
   const [state, dispatch] = useReducer(JoinReducer, findPasswordData);
 
   const submitResetPasswordFormCallback = (resp) => {
-    console.info("reset password resp:", resp);
     setfindPasswordDataResult({ isLoading: false, result: resp });
   }
 
@@ -238,7 +234,6 @@ export default function Join(props) {
                   )))}
                 </Select>
                 <FormHelperText>{paramsErrMsg['area_code'].errMsg}</FormHelperText>
-
               </FormControl>
             </Grid>
             <Grid item xs={8}>
@@ -256,7 +251,6 @@ export default function Join(props) {
 
           <Grid className={classes.inputOuter}>
             <FormControl fullWidth>
-              {/* <InputLabel ></InputLabel> */}
               <TextField
                 label="验证码"
                 type="text"

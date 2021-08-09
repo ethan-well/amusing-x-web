@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -13,12 +13,13 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Link from '@material-ui/core/Link';
 import HeaderDividers from './divider';
 import Typography from '@material-ui/core/Typography';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
-import useDataApi from '../../api/APIUtils.js';
-import { SubmitLoginForm } from './submit';
+import { SubmitLoginForm, RequestData } from './submit';
+import VericationCodeApp from './verication_code';
 
 const useStyles = makeStyles((theme) => ({
   marginTop: {
@@ -56,26 +57,64 @@ export default function Login() {
   let history = useHistory();
 
   const classes = useStyles();
-  const [state, setValues] = React.useState({
+  const [loginData, setValues] = React.useState({
     phone: '',
     area_code: '',
     password: '',
     type: 0,
-    showPassword: false,
+    verification_code: ''
   });
+
+  // 表单验证数据
+  const [paramsErrMsg, setParamsErrMsg] = useState({
+    phone: { errMsg: '', show: false, valid: false },
+    area_code: { errMsg: '', show: false, valid: false },
+    password: { errMsg: '', show: false, valid: false },
+    type: { errMsg: '', show: false, valid: false },
+    verification_code: { errMsg: '', show: false, valid: false },
+  })
 
   const [loginSubmited, setLoginSubmited] = useState(false)
   const [loginResult, setLoginResult] = useState({})
 
   // 获取区号
-  const [{ data, isLoading, isError }, doFetch] = useDataApi(`country/list`, { "result": [] }, true);
+  const [areaCodeList, setAreaCodeList] = useState({
+    succeed: false,
+    result: {},
+  });
+  const getAreaCodeListCallback = (data) => {
+    setAreaCodeList(data);
+  }
+  useEffect(() => {
+    RequestData('country/list', getAreaCodeListCallback)
+  }, []);
 
+  // 获取表单校验正则
+  const [regexps, setRegexps] = useState({
+    succeed: false,
+    result: {},
+  });
+  const getRegexpsCallback = (data) => {
+    setRegexps(data);
+  }
+  useEffect(() => {
+    RequestData('login/regexp', getRegexpsCallback)
+  }, []);
+
+  const [currentEdit, setCurrentEdit] = useState("");
   const handleChange = (prop) => (event) => {
-    setValues({ ...state, [prop]: event.target.value });
+    setCurrentEdit(prop);
+
+    let value = event.target.value
+    if (prop == 'type') {
+      value = parseInt(value, 10);
+    }
+
+    setValues({ ...loginData, [prop]: value });
   };
 
   const handleClickShowPassword = () => {
-    setValues({ ...state, showPassword: !state.showPassword });
+    setValues({ ...loginData, showPassword: !loginData.showPassword });
   };
 
   const handleMouseDownPassword = (event) => {
@@ -92,13 +131,112 @@ export default function Login() {
 
   const handleLoginSubmit = (event) => {
     event.preventDefault();
-    SubmitLoginForm(state, loginCallBack);
+    if (!ValidPropByRegexpsOnSubmitForm()) {
+      return
+    }
+
+    SubmitLoginForm(loginData, loginCallBack);
   }
+
+  const ValidPropByRegexpsOnSubmitForm = () => {
+    let keys = ['area_code', 'phone']
+    if (loginData.type == 0) {
+      keys.push("password");
+    } else {
+      keys.push("verification_code");
+    }
+
+    for (let key of keys) {
+      if (!ValidPropByRegexps(key)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  const ValidPropByRegexpsOnClickGetVerificationCodeButton = (props) => {
+    let keys = ['area_code', 'phone']
+
+    for (let key of keys) {
+      if (!ValidPropByRegexpsWithGiveData(key, props)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  const ValidPropByRegexpsWithGiveData = (prop, data) => {
+    if (!regexps || !regexps.result) {
+      return true
+    }
+
+    let regexpMap = Object.create({});
+    for (let i = 0; i < regexps.result.length; i++) {
+      regexpMap[regexps.result[i].name] = regexps.result[i];
+    };
+
+    if (regexpMap[prop]) {
+      let match = data[prop].match(regexpMap[prop].rules);
+      if (match) {
+        setParamsErrMsg({ ...paramsErrMsg, [prop]: { errMsg: '', show: false, valid: true } });
+        return true
+      } else {
+        setParamsErrMsg({ ...paramsErrMsg, [prop]: { errMsg: regexpMap[prop].desc, show: true, valid: false } });
+        return false
+      }
+    }
+
+    return true
+  };
+
 
   const HandlerForgetPasswordClick = (event) => {
     event.preventDefault();
     history.push("/reset_password");
   }
+
+  const [currentOnBlurField, setCurrentOnBlurField] = useState("");
+  const onBlurField = (prop) => (event) => {
+    setCurrentOnBlurField(prop);
+  }
+
+  useEffect(() => {
+    ValidPropByRegexpsOnBlur(currentEdit)
+  }, [loginData, currentEdit, currentOnBlurField]);
+
+  const ValidPropByRegexpsOnBlur = (prop) => {
+    if (currentOnBlurField != prop) {
+      return
+    }
+
+    ValidPropByRegexps(prop);
+  }
+
+  const ValidPropByRegexps = (prop) => {
+    if (!regexps || !regexps.result) {
+      return true
+    }
+
+    let regexpMap = Object.create({});
+    for (let i = 0; i < regexps.result.length; i++) {
+      regexpMap[regexps.result[i].name] = regexps.result[i];
+    };
+
+    if (regexpMap[prop]) {
+      let match = loginData[prop].match(regexpMap[prop].rules);
+      if (match) {
+        setParamsErrMsg({ ...paramsErrMsg, [prop]: { errMsg: '', show: false, valid: true } });
+        return true
+      } else {
+        setParamsErrMsg({ ...paramsErrMsg, [prop]: { errMsg: regexpMap[prop].desc, show: true, valid: false } });
+        return false
+      }
+    }
+
+    return true
+  };
 
   return (
     <React.Fragment>
@@ -123,10 +261,10 @@ export default function Login() {
           {/* 登录方式选择 */}
           <Grid>
             <Typography className={classes.root}>
-              <Link component="button" underline="none" color={state.type == 0 ? "primary" : "inherit"} value={0} onClick={handleChange("type")} >
+              <Link component="button" underline="none" color={loginData.type == 0 ? "primary" : "inherit"} value={0} onClick={handleChange("type")} >
                 密码登录
               </Link>
-              <Link component="button" underline="none" color={state.type == 1 ? "primary" : "inherit"} value={1} onClick={handleChange("type")} >
+              <Link component="button" underline="none" color={loginData.type == 1 ? "primary" : "inherit"} value={1} onClick={handleChange("type")} >
                 短信登录
               </Link>
             </Typography>
@@ -135,22 +273,24 @@ export default function Login() {
           {/* 手机号 */}
           <Grid container spacing={0} item xs={12}>
             <Grid item xs={4}>
-              <FormControl fullWidth className={classes.formControl}>
+              <FormControl fullWidth className={classes.formControl} error={paramsErrMsg['area_code'].show}>
                 <InputLabel id="demo-simple-select-label">选择区号</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={state.area_code}
+                  onBlur={onBlurField('area_code')}
+                  value={loginData.area_code}
                   onChange={handleChange('area_code')}
                 >
                   {/* 区号列表 */}
-                  {isLoading ? (
+                  {!areaCodeList.succeed ? (
                     <div>Loading ...</div>
                     // @ts-ignore
-                  ) : (data.result.map(item => (
+                  ) : (areaCodeList.result.map(item => (
                     <MenuItem key={item.cname} value={item.country_code}>{item.cname}</MenuItem>
                   )))}
                 </Select>
+                <FormHelperText>{paramsErrMsg['area_code'].errMsg}</FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={8}>
@@ -158,32 +298,39 @@ export default function Login() {
                 fullWidth
                 id="standard-required"
                 label="常用手机号"
+                onBlur={onBlurField('phone')}
                 onChange={handleChange('phone')}
+                error={paramsErrMsg['phone'].show}
+                helperText={paramsErrMsg['phone'].show && paramsErrMsg['phone'].errMsg}
               />
             </Grid>
           </Grid>
 
-          {state.type == 0 ?
+          {loginData.type == 0 ?
             // 密码
             (<Grid className={classes.inputOuter} item xs={12}>
               <FormControl fullWidth>
-                <InputLabel htmlFor="standard-adornment-password">请输入密码(6 到 8 位数字和大小写字母组成)</InputLabel>
-                <Input
+                <TextField
+                  label="密码"
                   id="standard-adornment-password"
-                  type={state.showPassword ? 'text' : 'password'}
-                  value={state.password}
+                  type={loginData.showPassword ? 'text' : 'password'}
+                  value={loginData.password}
+                  error={paramsErrMsg['password'].show}
+                  onBlur={onBlurField('password')}
                   onChange={handleChange('password')}
-                  endAdornment={
-                    <InputAdornment position="end">
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
                         onClick={handleClickShowPassword}
                         onMouseDown={handleMouseDownPassword}
+                        edge="end"
                       >
-                        {state.showPassword ? <Visibility /> : <VisibilityOff />}
+                        {paramsErrMsg['password'].show ? <Visibility /> : <VisibilityOff />}
                       </IconButton>
                     </InputAdornment>
-                  }
+                  }}
+                  helperText={paramsErrMsg['password'].show && paramsErrMsg['password'].errMsg}
                 />
               </FormControl>
             </Grid>)
@@ -191,16 +338,17 @@ export default function Login() {
             // 验证码登录
             (<Grid className={classes.inputOuter}>
               <FormControl fullWidth>
-                <InputLabel >请输入短信验证码</InputLabel>
-                <Input
+                <TextField
+                  label="验证码"
                   type="text"
-                  value={state.password}
-                  onChange={handleChange('password')}
-                  endAdornment={
-                    <Link underline="none" className={classes.inputEndAdornment} href="#">
-                      点击获取
-                    </Link>
-                  }
+                  value={loginData.verification_code}
+                  onBlur={onBlurField('verification_code')}
+                  onChange={handleChange('verification_code')}
+                  InputProps={{
+                    endAdornment: <VericationCodeApp action="login" data={loginData} onClick={ValidPropByRegexpsOnClickGetVerificationCodeButton} />
+                  }}
+                  error={paramsErrMsg['verification_code'].show}
+                  helperText={paramsErrMsg['verification_code'].show && paramsErrMsg['verification_code'].errMsg}
                 />
               </FormControl>
             </Grid>)

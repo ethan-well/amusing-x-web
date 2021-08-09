@@ -33,7 +33,7 @@ const SubmitJoinForm = (params, callback) => {
 
 const SubmitLoginForm = (state, callback) => {
   let body = Object.create({});
-  let paramsKey = ["phone", "area_code", "password", "type"]
+  let paramsKey = ["phone", "area_code", "password", "type", "verification_code"]
 
   for (const key of paramsKey) {
     body[key] = state[key]
@@ -67,8 +67,6 @@ const SubmitResetPasswordForm = (state, callback) => {
   Object.keys(state).map(key => {
     body[key] = state[key].value
   })
-
-  console.info("body", body);
 
   fetch('http://localhost:3000/v1/amusinguserserv/reset_password', {
     method: 'POST',

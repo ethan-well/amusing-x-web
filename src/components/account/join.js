@@ -1,5 +1,5 @@
 import React, { useState, useReducer, useEffect } from 'react';
-import { makeStyles, StylesProvider } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Header from '../header/header';
@@ -12,6 +12,7 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Link from '@material-ui/core/Link';
 import HeaderDividers from './divider';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
@@ -260,7 +261,7 @@ export default function Join(props) {
 
           <Grid container className={classes.inputOuter} spacing={0} item>
             <Grid item xs={4}>
-              <FormControl fullWidth className={classes.formControl}>
+              <FormControl fullWidth className={classes.formControl} error={paramsErrMsg['area_code'].show}>
                 <InputLabel id="demo-simple-select-label">区号</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -276,6 +277,7 @@ export default function Join(props) {
                     <MenuItem key={item.cname} value={item.country_code}>{item.cname}</MenuItem>
                   )))}
                 </Select>
+                <FormHelperText>{paramsErrMsg['area_code'].errMsg}</FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={8}>
