@@ -17,7 +17,7 @@ import HeaderDividers from './divider';
 import { useHistory } from 'react-router-dom';
 import VericationCodeApp from './verication_code';
 import JoinReducer from './joinReducer';
-import { SubmitResetPasswordForm, RequestData } from './submit'
+import { SubmitResetpasswordForm, RequestData } from './submit'
 
 const useStyles = makeStyles((theme) => ({
   marginTop: {
@@ -54,11 +54,12 @@ export default function Join(props) {
   let history = useHistory();
 
   // 注册表单数据
-  const [findPasswordData, setValues] = useState({
-    password: { value: '', errMsg: '', show: false },
-    area_code: { value: '', errMsg: '', show: true },
-    phone: { value: '', errMsg: '', show: true },
-    verification_code: { value: '', errMsg: '', show: true },
+  const [findpasswordData, setValues] = useState({
+    password: '',
+    area_code: '',
+    phone: '',
+    verification_code: '',
+    password_show: false
   });
 
   // 表单验证数据
@@ -70,7 +71,7 @@ export default function Join(props) {
   })
 
   // 登陆结果
-  const [findPasswordDataResult, setfindPasswordDataResult] = useState({
+  const [findpasswordDataResult, setfindpasswordDataResult] = useState({
     isLoading: false,
     result: {},
   });
@@ -89,23 +90,23 @@ export default function Join(props) {
 
 
   // 获取区号
-  const [areaCodeList, setAreaCodeList] = useState({
+  const [area_codeList, setarea_codeList] = useState({
     succeed: false,
     result: {},
   });
-  const getAreaCodeListCallback = (data) => {
-    setAreaCodeList(data);
+  const getarea_codeListCallback = (data) => {
+    setarea_codeList(data);
   }
   useEffect(() => {
-    RequestData('country/list', getAreaCodeListCallback)
+    RequestData('country/list', getarea_codeListCallback)
   }, []);
 
   useEffect(() => {
-    if (findPasswordDataResult.result && findPasswordDataResult.result.succeed) {
+    if (findpasswordDataResult.result && findpasswordDataResult.result.succeed) {
       history.push('/login');
     }
 
-  }, [history, findPasswordDataResult]);
+  }, [history, findpasswordDataResult]);
 
 
   const [currentEdit, setCurrentEdit] = useState("");
@@ -113,8 +114,7 @@ export default function Join(props) {
   const handleChange = (prop) => (event) => {
     setCurrentEdit(prop);
 
-    setValues({ ...findPasswordData, [prop]: { ...findPasswordData[prop], value: event.target.value } });
-    dispatch({ type: 'CHANGE_DATA', prop: prop, value: event.target.value })
+    setValues({ ...findpasswordData, [prop]: event.target.value });
   };
 
   const [currentOnBlurField, setCurrentOnBlurField] = useState("");
@@ -124,7 +124,44 @@ export default function Join(props) {
 
   useEffect(() => {
     ValidPropByRegexpsOnBlur(currentEdit)
-  }, [findPasswordData, currentEdit, currentOnBlurField]);
+  }, [findpasswordData, currentEdit, currentOnBlurField]);
+
+
+  const ValidPropByRegexpsOnClickGetverification_codeButton = (props) => {
+    let keys = ['area_code', 'phone']
+
+    for (let key of keys) {
+      if (!ValidPropByRegexpsWithGiveData(key, props)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  const ValidPropByRegexpsWithGiveData = (prop, data) => {
+    if (!regexps || !regexps.result) {
+      return true
+    }
+
+    let regexpMap = Object.create({});
+    for (let i = 0; i < regexps.result.length; i++) {
+      regexpMap[regexps.result[i].name] = regexps.result[i];
+    };
+
+    if (regexpMap[prop]) {
+      let match = data[prop].match(regexpMap[prop].rules);
+      if (match) {
+        setParamsErrMsg({ ...paramsErrMsg, [prop]: { errMsg: '', show: false, valid: true } });
+        return true
+      } else {
+        setParamsErrMsg({ ...paramsErrMsg, [prop]: { errMsg: regexpMap[prop].desc, show: true, valid: false } });
+        return false
+      }
+    }
+
+    return true
+  };
 
   const ValidPropByRegexpsOnBlur = (prop) => {
     if (currentOnBlurField != prop) {
@@ -145,7 +182,7 @@ export default function Join(props) {
     };
 
     if (regexpMap[prop]) {
-      let match = findPasswordData[prop].value.match(regexpMap[prop].rules);
+      let match = findpasswordData[prop].match(regexpMap[prop].rules);
       if (match) {
         setParamsErrMsg({ ...paramsErrMsg, [prop]: { errMsg: '', show: false, valid: true } });
         return true
@@ -158,19 +195,17 @@ export default function Join(props) {
     return true
   };
 
-  const handleClickShowPassword = () => {
-    setValues({ ...findPasswordData, password: { ...findPasswordData.password, show: !findPasswordData.password.show } });
+  const handleClickShowpassword = () => {
+    setValues({ ...findpasswordData, password_show: !findpasswordData.password_show });
   };
 
   // @ts-ignore
-  const handleMouseDownPassword = (event) => {
+  const handleMouseDownpassword = (event) => {
     event.preventDefault();
   };
 
-  const [state, dispatch] = useReducer(JoinReducer, findPasswordData);
-
-  const submitResetPasswordFormCallback = (resp) => {
-    setfindPasswordDataResult({ isLoading: false, result: resp });
+  const submitResetpasswordFormCallback = (resp) => {
+    setfindpasswordDataResult({ isLoading: false, result: resp });
   }
 
   // @ts-ignore
@@ -180,7 +215,9 @@ export default function Join(props) {
       return
     }
 
-    SubmitResetPasswordForm(state, submitResetPasswordFormCallback);
+
+    console.info('findpasswordData', findpasswordData);
+    SubmitResetpasswordForm(findpasswordData, submitResetpasswordFormCallback);
   };
 
   const ValidPropByRegexpsOnSubmitForm = () => {
@@ -221,15 +258,15 @@ export default function Join(props) {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={findPasswordData.area_code.value}
+                  value={findpasswordData.area_code}
                   onChange={handleChange('area_code')}
                   onBlur={onBlurField('area_code')}
                 >
                   {/* 区号列表 */}
-                  {!areaCodeList.succeed ? (
+                  {!area_codeList.succeed ? (
                     <div>Loading ...</div>
                     // @ts-ignore
-                  ) : (areaCodeList.result.map(item => (
+                  ) : (area_codeList.result.map(item => (
                     <MenuItem key={item.cname} value={item.country_code}>{item.cname}</MenuItem>
                   )))}
                 </Select>
@@ -255,11 +292,11 @@ export default function Join(props) {
                 label="验证码"
                 type="text"
                 className={classes.codeInputEndAdornment}
-                value={findPasswordData.verification_code.value}
+                value={findpasswordData.verification_code}
                 onChange={handleChange('verification_code')}
                 onBlur={onBlurField('verification_code')}
                 InputProps={{
-                  endAdornment: <VericationCodeApp />
+                  endAdornment: <VericationCodeApp action="login" data={findpasswordData} onClick={ValidPropByRegexpsOnClickGetverification_codeButton} />
                 }}
                 error={paramsErrMsg['verification_code'].show}
                 helperText={paramsErrMsg['verification_code'].show && paramsErrMsg['verification_code'].errMsg}
@@ -272,20 +309,20 @@ export default function Join(props) {
               <TextField
                 label="新密码"
                 id="standard-adornment-password"
-                type={findPasswordData.password.show ? 'text' : 'password'}
+                type={findpasswordData.password_show ? 'text' : 'password'}
                 error={paramsErrMsg['password'].show}
-                value={findPasswordData.password.value}
+                value={findpasswordData.password}
                 onBlur={onBlurField('password')}
                 onChange={handleChange('password')}
                 InputProps={{
                   endAdornment: <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
+                      onClick={handleClickShowpassword}
+                      onMouseDown={handleMouseDownpassword}
                       edge="end"
                     >
-                      {findPasswordData.password.show ? <Visibility /> : <VisibilityOff />}
+                      {findpasswordData.password.show ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
                 }}
@@ -296,9 +333,9 @@ export default function Join(props) {
 
 
           <Grid className={classes.inputOuter} container>
-            <Grid item xs={6} className={findPasswordDataResult.result && findPasswordDataResult.result.succeed ? classes.primaryColor : classes.secondaryColor} >
-              {findPasswordDataResult.result && findPasswordDataResult.result.succeed && "注册成功"}
-              {findPasswordDataResult.result && !findPasswordDataResult.result.succeed && findPasswordDataResult.result.error_info && String(findPasswordDataResult.result.error_info.message)}
+            <Grid item xs={6} className={findpasswordDataResult.result && findpasswordDataResult.result.succeed ? classes.primaryColor : classes.secondaryColor} >
+              {findpasswordDataResult.result && findpasswordDataResult.result.succeed && "注册成功"}
+              {findpasswordDataResult.result && !findpasswordDataResult.result.succeed && findpasswordDataResult.result.error_info && String(findpasswordDataResult.result.error_info.message)}
             </Grid>
           </Grid>
 

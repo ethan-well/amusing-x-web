@@ -5,10 +5,12 @@ import { makeStyles } from '@material-ui/core/styles';
 const SubmitJoinForm = (params, callback) => {
   let body = Object.create({});
   Object.keys(params).map(key => {
-    body[key] = params[key].value
+    if (key != 'password_show') {
+      body[key] = params[key]
+    }
   })
 
-  fetch('http://localhost:3000/v1/amusinguserserv/join', {
+  fetch('http://localhost:3000/v1/amusingxwebapiserv/join', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -39,7 +41,7 @@ const SubmitLoginForm = (state, callback) => {
     body[key] = state[key]
   }
 
-  fetch('http://localhost:3000/v1/amusinguserserv/login', {
+  fetch('http://localhost:3000/v1/amusingxwebapiserv/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -62,13 +64,17 @@ const SubmitLoginForm = (state, callback) => {
     });
 }
 
-const SubmitResetPasswordForm = (state, callback) => {
+const SubmitResetpasswordForm = (state, callback) => {
   let body = Object.create({});
   Object.keys(state).map(key => {
-    body[key] = state[key].value
+    if (key != `password_show`) {
+      body[key] = state[key]
+    }
   })
 
-  fetch('http://localhost:3000/v1/amusinguserserv/reset_password', {
+  console.info("body", body)
+
+  fetch('http://localhost:3000/v1/amusingxwebapiserv/reset_password', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -92,7 +98,7 @@ const SubmitResetPasswordForm = (state, callback) => {
 }
 
 const RequestData = (url, callback) => {
-  fetch(`http://localhost:3000/v1/amusinguserserv/${url}`)
+  fetch(`http://localhost:3000/v1/amusingxwebapiserv/${url}`)
     .then(resp => resp.json())
     .then(data => {
       callback(data)
@@ -108,4 +114,4 @@ const RequestData = (url, callback) => {
     });
 }
 
-export { SubmitJoinForm, SubmitLoginForm, SubmitResetPasswordForm, RequestData }
+export { SubmitJoinForm, SubmitLoginForm, SubmitResetpasswordForm, RequestData }

@@ -17,7 +17,6 @@ import Link from '@material-ui/core/Link';
 import HeaderDividers from './divider';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import VericationCodeApp from './verication_code';
-import JoinReducer from './joinReducer';
 import { SubmitJoinForm, RequestData } from './submit'
 
 const useStyles = makeStyles((theme) => ({
@@ -56,11 +55,12 @@ export default function Join(props) {
 
   // 注册表单数据
   const [joinData, setValues] = useState({
-    nickname: { value: '', errMsg: '', show: true },
-    password: { value: '', errMsg: '', show: false },
-    area_code: { value: '', errMsg: '', show: true },
-    phone: { value: '', errMsg: '', show: true },
-    verification_code: { value: '', errMsg: '', show: true },
+    nickname: '',
+    password: '',
+    area_code: '',
+    phone: '',
+    verification_code: '',
+    password_show: false,
   });
 
   // 表单验证数据
@@ -92,15 +92,15 @@ export default function Join(props) {
 
 
   // 获取区号
-  const [areaCodeList, setAreaCodeList] = useState({
+  const [area_codeList, setarea_codeList] = useState({
     succeed: false,
     result: {},
   });
-  const getAreaCodeListCallback = (data) => {
-    setAreaCodeList(data);
+  const getarea_codeListCallback = (data) => {
+    setarea_codeList(data);
   }
   useEffect(() => {
-    RequestData('country/list', getAreaCodeListCallback)
+    RequestData('country/list', getarea_codeListCallback)
   }, []);
 
 
@@ -122,8 +122,7 @@ export default function Join(props) {
   const handleChange = (prop) => (event) => {
     setCurrentEdit(prop);
 
-    setValues({ ...joinData, [prop]: { ...joinData[prop], value: event.target.value } });
-    dispatch({ type: 'CHANGE_DATA', prop: prop, value: event.target.value })
+    setValues({ ...joinData, [prop]: event.target.value });
   };
 
   const [currentOnBlurField, setCurrentOnBlurField] = useState("");
@@ -144,17 +143,17 @@ export default function Join(props) {
   }
 
   const ValidPropByRegexps = (prop) => {
-    if (!regexps || !regexps.result) {
+    if (!regexps || !regexps.result.regexps) {
       return true
     }
 
     let regexpMap = Object.create({});
-    for (let i = 0; i < regexps.result.length; i++) {
-      regexpMap[regexps.result[i].name] = regexps.result[i];
+    for (let i = 0; i < regexps.result.regexps.length; i++) {
+      regexpMap[regexps.result.regexps[i].name] = regexps.result.regexps[i];
     };
 
     if (regexpMap[prop]) {
-      let match = joinData[prop].value.match(regexpMap[prop].rules);
+      let match = joinData[prop].match(regexpMap[prop].rules);
       if (match) {
         setParamsErrMsg({ ...paramsErrMsg, [prop]: { errMsg: '', show: false, valid: true } });
         return true
@@ -167,16 +166,14 @@ export default function Join(props) {
     return true
   };
 
-  const handleClickShowPassword = () => {
-    setValues({ ...joinData, password: { ...joinData.password, show: !joinData.password.show } });
+  const handleClickShowpassword = () => {
+    setValues({ ...joinData, password_show: !joinData.password_show });
   };
 
   // @ts-ignore
-  const handleMouseDownPassword = (event) => {
+  const handleMouseDownpassword = (event) => {
     event.preventDefault();
   };
-
-  const [state, dispatch] = useReducer(JoinReducer, joinData);
 
   const callback = (resp) => {
     setJointResult({ isLoading: false, result: resp });
@@ -189,7 +186,43 @@ export default function Join(props) {
       return
     }
 
-    SubmitJoinForm(state, callback);
+    SubmitJoinForm(joinData, callback);
+  };
+
+  const ValidPropByRegexpsOnClickGetverification_codeButton = (props) => {
+    let keys = ['area_code', 'phone']
+
+    for (let key of keys) {
+      if (!ValidPropByRegexpsWithGiveData(key, props)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  const ValidPropByRegexpsWithGiveData = (prop, data) => {
+    if (!regexps || !regexps.result || !regexps.result.regexps) {
+      return true
+    }
+
+    let regexpMap = Object.create({});
+    for (let i = 0; i < regexps.result.regexps.length; i++) {
+      regexpMap[regexps.result.regexps[i].name] = regexps.result.regexps[i];
+    };
+
+    if (regexpMap[prop]) {
+      let match = data[prop].match(regexpMap[prop].rules);
+      if (match) {
+        setParamsErrMsg({ ...paramsErrMsg, [prop]: { errMsg: '', show: false, valid: true } });
+        return true
+      } else {
+        setParamsErrMsg({ ...paramsErrMsg, [prop]: { errMsg: regexpMap[prop].desc, show: true, valid: false } });
+        return false
+      }
+    }
+
+    return true
   };
 
   const ValidPropByRegexpsOnSubmitForm = () => {
@@ -224,7 +257,7 @@ export default function Join(props) {
         <Grid item xs={4}>
           <Grid className={classes.inputOuter} item xs={12}>
             <TextField fullWidth id="standard-required" label="昵称"
-              value={joinData.nickname.value}
+              value={joinData.nickname}
               onChange={handleChange('nickname')}
               onBlur={onBlurField('nickname')}
               error={paramsErrMsg['nickname'].show}
@@ -237,17 +270,17 @@ export default function Join(props) {
               <TextField
                 label="密码"
                 id="standard-adornment-password"
-                type={joinData.password.show ? 'text' : 'password'}
+                type={joinData.password_show ? 'text' : 'password'}
                 error={paramsErrMsg['password'].show}
-                value={joinData.password.value}
+                value={joinData.password}
                 onBlur={onBlurField('password')}
                 onChange={handleChange('password')}
                 InputProps={{
                   endAdornment: <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
+                      onClick={handleClickShowpassword}
+                      onMouseDown={handleMouseDownpassword}
                       edge="end"
                     >
                       {joinData.password.show ? <Visibility /> : <VisibilityOff />}
@@ -266,14 +299,15 @@ export default function Join(props) {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={joinData.area_code.value}
+                  onBlur={onBlurField('area_code')}
+                  value={joinData.area_code}
                   onChange={handleChange('area_code')}
                 >
                   {/* 区号列表 */}
-                  {!areaCodeList.succeed ? (
+                  {!area_codeList.succeed ? (
                     <div>Loading ...</div>
                     // @ts-ignore
-                  ) : (areaCodeList.result.map(item => (
+                  ) : (area_codeList.result.map(item => (
                     <MenuItem key={item.cname} value={item.country_code}>{item.cname}</MenuItem>
                   )))}
                 </Select>
@@ -300,11 +334,11 @@ export default function Join(props) {
                 label="验证码"
                 type="text"
                 className={classes.codeInputEndAdornment}
-                value={joinData.verification_code.value}
+                value={joinData.verification_code}
                 onChange={handleChange('verification_code')}
                 onBlur={onBlurField('verification_code')}
                 InputProps={{
-                  endAdornment: <VericationCodeApp />
+                  endAdornment: <VericationCodeApp action="join" data={joinData} onClick={ValidPropByRegexpsOnClickGetverification_codeButton} />
                 }}
                 error={paramsErrMsg['verification_code'].show}
                 helperText={paramsErrMsg['verification_code'].show && paramsErrMsg['verification_code'].errMsg}

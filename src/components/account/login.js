@@ -78,15 +78,15 @@ export default function Login() {
   const [loginResult, setLoginResult] = useState({})
 
   // 获取区号
-  const [areaCodeList, setAreaCodeList] = useState({
+  const [area_codeList, setarea_codeList] = useState({
     succeed: false,
     result: {},
   });
-  const getAreaCodeListCallback = (data) => {
-    setAreaCodeList(data);
+  const getarea_codeListCallback = (data) => {
+    setarea_codeList(data);
   }
   useEffect(() => {
-    RequestData('country/list', getAreaCodeListCallback)
+    RequestData('country/list', getarea_codeListCallback)
   }, []);
 
   // 获取表单校验正则
@@ -113,11 +113,11 @@ export default function Login() {
     setValues({ ...loginData, [prop]: value });
   };
 
-  const handleClickShowPassword = () => {
-    setValues({ ...loginData, showPassword: !loginData.showPassword });
+  const handleClickShowpassword = () => {
+    setValues({ ...loginData, showpassword: !loginData.showpassword });
   };
 
-  const handleMouseDownPassword = (event) => {
+  const handleMouseDownpassword = (event) => {
     event.preventDefault();
   };
 
@@ -155,7 +155,7 @@ export default function Login() {
     return true;
   }
 
-  const ValidPropByRegexpsOnClickGetVerificationCodeButton = (props) => {
+  const ValidPropByRegexpsOnClickGetverification_codeButton = (props) => {
     let keys = ['area_code', 'phone']
 
     for (let key of keys) {
@@ -168,13 +168,13 @@ export default function Login() {
   }
 
   const ValidPropByRegexpsWithGiveData = (prop, data) => {
-    if (!regexps || !regexps.result) {
+    if (!regexps || !regexps.result || !regexps.result.regexps) {
       return true
     }
 
     let regexpMap = Object.create({});
-    for (let i = 0; i < regexps.result.length; i++) {
-      regexpMap[regexps.result[i].name] = regexps.result[i];
+    for (let i = 0; i < regexps.result.regexps.length; i++) {
+      regexpMap[regexps.result.regexps[i].name] = regexps.result.regexps[i];
     };
 
     if (regexpMap[prop]) {
@@ -191,8 +191,7 @@ export default function Login() {
     return true
   };
 
-
-  const HandlerForgetPasswordClick = (event) => {
+  const HandlerForgetpasswordClick = (event) => {
     event.preventDefault();
     history.push("/reset_password");
   }
@@ -215,13 +214,13 @@ export default function Login() {
   }
 
   const ValidPropByRegexps = (prop) => {
-    if (!regexps || !regexps.result) {
+    if (!regexps || !regexps.result || !regexps.result.regexps) {
       return true
     }
 
     let regexpMap = Object.create({});
-    for (let i = 0; i < regexps.result.length; i++) {
-      regexpMap[regexps.result[i].name] = regexps.result[i];
+    for (let i = 0; i < regexps.result.regexps.length; i++) {
+      regexpMap[regexps.result.regexps[i].name] = regexps.result.regexps[i];
     };
 
     if (regexpMap[prop]) {
@@ -283,10 +282,10 @@ export default function Login() {
                   onChange={handleChange('area_code')}
                 >
                   {/* 区号列表 */}
-                  {!areaCodeList.succeed ? (
+                  {!area_codeList.succeed ? (
                     <div>Loading ...</div>
                     // @ts-ignore
-                  ) : (areaCodeList.result.map(item => (
+                  ) : (area_codeList.result.map(item => (
                     <MenuItem key={item.cname} value={item.country_code}>{item.cname}</MenuItem>
                   )))}
                 </Select>
@@ -313,7 +312,7 @@ export default function Login() {
                 <TextField
                   label="密码"
                   id="standard-adornment-password"
-                  type={loginData.showPassword ? 'text' : 'password'}
+                  type={loginData.showpassword ? 'text' : 'password'}
                   value={loginData.password}
                   error={paramsErrMsg['password'].show}
                   onBlur={onBlurField('password')}
@@ -322,8 +321,8 @@ export default function Login() {
                     endAdornment: <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
+                        onClick={handleClickShowpassword}
+                        onMouseDown={handleMouseDownpassword}
                         edge="end"
                       >
                         {paramsErrMsg['password'].show ? <Visibility /> : <VisibilityOff />}
@@ -345,7 +344,7 @@ export default function Login() {
                   onBlur={onBlurField('verification_code')}
                   onChange={handleChange('verification_code')}
                   InputProps={{
-                    endAdornment: <VericationCodeApp action="login" data={loginData} onClick={ValidPropByRegexpsOnClickGetVerificationCodeButton} />
+                    endAdornment: <VericationCodeApp action="login" data={loginData} onClick={ValidPropByRegexpsOnClickGetverification_codeButton} />
                   }}
                   error={paramsErrMsg['verification_code'].show}
                   helperText={paramsErrMsg['verification_code'].show && paramsErrMsg['verification_code'].errMsg}
@@ -367,7 +366,7 @@ export default function Login() {
             <Link
               component="button"
               variant="body2"
-              onClick={HandlerForgetPasswordClick}
+              onClick={HandlerForgetpasswordClick}
             >
               忘记密码？
             </Link>
