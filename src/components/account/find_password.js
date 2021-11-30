@@ -14,7 +14,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import HeaderDividers from './divider';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import VericationCodeApp from './verication_code';
 import JoinReducer from './joinReducer';
 import { SubmitResetpasswordForm, RequestData } from './submit'
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Join(props) {
   const classes = useStyles();
-  let history = useHistory();
+  const navigate = useNavigate();
 
   // 注册表单数据
   const [findpasswordData, setValues] = useState({
@@ -103,10 +103,10 @@ export default function Join(props) {
 
   useEffect(() => {
     if (findpasswordDataResult.result && findpasswordDataResult.result.succeed) {
-      history.push('/login');
+      navigate('/login');
     }
 
-  }, [history, findpasswordDataResult]);
+  }, [navigate, findpasswordDataResult]);
 
 
   const [currentEdit, setCurrentEdit] = useState("");
