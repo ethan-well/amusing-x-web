@@ -15,7 +15,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Link from '@material-ui/core/Link';
 import HeaderDividers from './divider';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import VericationCodeApp from './verication_code';
 import { SubmitJoinForm, RequestData } from './submit'
 
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Join(props) {
   const classes = useStyles();
-  let history = useHistory();
+  const navigate = useNavigate();
 
   // 注册表单数据
   const [joinData, setValues] = useState({
@@ -111,10 +111,10 @@ export default function Join(props) {
   useEffect(() => {
     if (joinResult.result && joinResult.result.succeed) {
       sleep(3000);
-      history.push('/login');
+      navigate('/login');
     }
 
-  }, [history, joinResult]);
+  }, [navigate, joinResult]);
 
 
   const [currentEdit, setCurrentEdit] = useState("");

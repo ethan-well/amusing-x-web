@@ -17,7 +17,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Link from '@material-ui/core/Link';
 import HeaderDividers from './divider';
 import Typography from '@material-ui/core/Typography';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { SubmitLoginForm, RequestData } from './submit';
 import VericationCodeApp from './verication_code';
 
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Login() {
-  let history = useHistory();
+  let navigate = useNavigate();
 
   const classes = useStyles();
   const [loginData, setValues] = React.useState({
@@ -125,7 +125,7 @@ export default function Login() {
     setLoginSubmited(true)
     setLoginResult(result);
     if (result.succeed) {
-      history.push("/");
+      navigate("/");
     }
   }
 
@@ -193,7 +193,7 @@ export default function Login() {
 
   const HandlerForgetpasswordClick = (event) => {
     event.preventDefault();
-    history.push("/reset_password");
+    navigate("/reset_password");
   }
 
   const [currentOnBlurField, setCurrentOnBlurField] = useState("");
@@ -240,7 +240,6 @@ export default function Login() {
   return (
     <React.Fragment>
       <Header />
-
       {/* 分割线 */}
       <Grid container className={classes.marginTop}>
         <Grid item xs={3}>
