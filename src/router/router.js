@@ -1,9 +1,8 @@
 import React from "react";
 import Home from "../components/home/home";
-// import Join from "../components/account/join";
-// import JoinContainer from "../container/account/JoinContainer";
+import JoinContainer from "../container/account/JoinContainer";
 import Login from "../components/account/login";
-import FindpasswordContainer from "../components/account/find_password";
+import FindPasswordContainer from "../components/account/find_password";
 import Join from "../components/account/join";
 
 import {
@@ -20,8 +19,8 @@ export default function AMSRouter() {
         </Route>
         <Route path="/login" element={<Login/>}>
         </Route>
-        <Route path="/join" element={<Join />} />
-        <Route path="/reset_password" element={<FindpasswordContainer />} />
+        <Route path="/join" element={<JoinContainer />} />
+        <Route path="/reset_password" element={<FindPasswordContainer />} />
       </Routes>
     </Router>
   );
