@@ -10,7 +10,7 @@ const SubmitJoinForm = (params, callback) => {
     }
   })
 
-  fetch('http://localhost:3000/v1/amusingxwebapiserv/join', {
+  fetch('http://localhost:3000/v1/europa/join', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ const SubmitLoginForm = (state, callback) => {
     body[key] = state[key]
   }
 
-  fetch('http://localhost:3000/v1/amusingxwebapiserv/login', {
+  fetch('http://localhost:3000/v1/europa/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ const SubmitResetpasswordForm = (state, callback) => {
 
   console.info("body", body)
 
-  fetch('http://localhost:3000/v1/amusingxwebapiserv/reset_password', {
+  fetch('http://localhost:3000/v1/europa/reset_password', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ const SubmitResetpasswordForm = (state, callback) => {
 }
 
 const RequestData = (url, callback) => {
-  fetch(`http://localhost:3000/v1/amusingxwebapiserv/${url}`)
+  fetch(`http://localhost:3000/v1/europa/${url}`)
     .then(resp => resp.json())
     .then(data => {
       callback(data)
@@ -114,4 +114,40 @@ const RequestData = (url, callback) => {
     });
 }
 
-export { SubmitJoinForm, SubmitLoginForm, SubmitResetpasswordForm, RequestData }
+const LoginOAuth = (state, callback) => {
+  console.log("LoginOAuth");
+
+  let body = Object.create({});
+  Object.keys(state).map(key => {
+    console.log(body[key]);
+    if (key != `password_show`) {
+      body[key] = state[key]
+    }
+  })
+
+  console.info("body", body)
+
+  fetch('http://localhost:3000/v1/europa/login/oauth', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  })
+    .then(resp => resp.json())
+    .then(data => {
+      callback(data);
+    })
+    .catch(err => {
+      let result = {
+        succeed: false,
+        err_info: {
+          code: "C0001",
+          message: err,
+        },
+      };
+      callback(result)
+    });
+}
+
+export { SubmitJoinForm, SubmitLoginForm, SubmitResetpasswordForm, RequestData, LoginOAuth }
