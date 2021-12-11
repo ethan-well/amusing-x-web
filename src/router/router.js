@@ -4,6 +4,8 @@ import JoinContainer from "../container/account/JoinContainer";
 import Login from "../components/account/login";
 import FindPasswordContainer from "../components/account/find_password";
 import Join from "../components/account/join";
+import OAuth from "../components/account/oauth";
+import OAuthLogin from "../components/account/oauth_login";
 
 import {
   BrowserRouter as Router,
@@ -17,8 +19,11 @@ export default function AMSRouter() {
       <Routes>
         <Route exact path="/" element={<Home/>}>
         </Route>
-        <Route path="/login" element={<Login/>}>
+        <Route path="/login" element={<OAuthLogin/>}>
         </Route>
+        {/* <Route path="/join" element={<Join />} /> */}
+        <Route path="/reset_password" element={<FindPasswordContainer />} />
+        <Route path="/login/oauth" element={<OAuth />} />
         <Route path="/join" element={<JoinContainer />} />
         <Route path="/reset_password" element={<FindPasswordContainer />} />
       </Routes>
