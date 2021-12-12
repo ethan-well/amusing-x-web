@@ -10,7 +10,7 @@ const SubmitJoinForm = (params, callback) => {
     }
   })
 
-  fetch('http://localhost:3000/v1/europa/join', {
+  fetch(`${process.env.REACT_APP_EUROPA_SERVER_HOST}/v1/europa/join`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ const SubmitLoginForm = (state, callback) => {
     body[key] = state[key]
   }
 
-  fetch('http://localhost:3000/v1/europa/login', {
+  fetch(`${process.env.REACT_APP_EUROPA_SERVER_HOST}/v1/europa/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ const SubmitResetpasswordForm = (state, callback) => {
 
   console.info("body", body)
 
-  fetch('http://localhost:3000/v1/europa/reset_password', {
+  fetch(`${process.env.REACT_APP_EUROPA_SERVER_HOST}/v1/europa/reset_password`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ const SubmitResetpasswordForm = (state, callback) => {
 }
 
 const RequestData = (url, callback) => {
-  fetch(`http://localhost:3000/v1/europa/${url}`)
+  fetch(`${process.env.REACT_APP_EUROPA_SERVER_HOST}/v1/europa/${url}`)
     .then(resp => resp.json())
     .then(data => {
       callback(data)
@@ -127,7 +127,7 @@ const LoginOAuth = (state, callback) => {
 
   console.info("body", body)
 
-  fetch('http://localhost:3000/v1/europa/login/oauth', {
+  fetch(`${process.env.REACT_APP_EUROPA_SERVER_HOST}/v1/europa/login/oauth`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

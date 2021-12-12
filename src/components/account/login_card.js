@@ -5,19 +5,9 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 import CardMedia from '@mui/material/CardMedia';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
 import Button from '@mui/material/Button';
 import Logo from "./logo.png"
-import ImageListItem from '@mui/material/ImageListItem';
-import LoadingButton from '@mui/lab/LoadingButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import SaveIcon from '@mui/icons-material/Save';
-import SendIcon from '@mui/icons-material/Send';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
 
@@ -71,7 +61,7 @@ export default function MediaControlCard() {
         <Box p={10} sx={{ display: 'flex'}}>
             <CardContent className={classes.cardContentSize} sx={{ display: 'flex', flexDirection: 'column', alignItems: "center", justifyContent: "center"  }}>
                 <Typography component="div">
-                    <Button style={{textTransform: 'none'}} loadingPosition="start" startIcon={<GitHubIcon />} href="#text-buttons" variant="outlined">
+                    <Button style={{textTransform: 'none'}} loadingPosition="start" startIcon={<GitHubIcon />} href={process.env.REACT_APP_GITHUB_OAUTH_URL} variant="outlined">
                         GitHub 登录
                     </Button>
                 </Typography>
@@ -82,7 +72,8 @@ export default function MediaControlCard() {
                 component="img"
                 with="300"
                 height="300"
-                image={Logo}
+                // image={Logo}
+                src={process.env.PUBLIC_URL + "/logo.png"}
                 alt="Live from space album cover"
             />
         </Box>
