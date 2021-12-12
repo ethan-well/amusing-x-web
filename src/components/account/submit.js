@@ -98,7 +98,7 @@ const SubmitResetpasswordForm = (state, callback) => {
 }
 
 const RequestData = (url, callback) => {
-  fetch(`${process.env.REACT_APP_EUROPA_SERVER_HOST}/v1/europa/${url}`)
+  fetch(`${process.env.REACT_APP_EUROPA_SERVER_HOST}/${url}`)
     .then(resp => resp.json())
     .then(data => {
       callback(data)
@@ -127,7 +127,7 @@ const LoginOAuth = (state, callback) => {
 
   console.info("body", body)
 
-  fetch(`${process.env.REACT_APP_EUROPA_SERVER_HOST}/v1/europa/login/oauth`, {
+  fetch(`${process.env.REACT_APP_EUROPA_SERVER_HOST}/${process.env.REACT_APP_EUROPA_LOGIN_OAUTH}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

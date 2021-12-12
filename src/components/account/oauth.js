@@ -19,16 +19,15 @@ export default function OAuth(props) {
         console.log(resp)
     }
 
-    let loginOAuth = {"provider": "github", "code":  query.get("code") }
+    let loginOAuth = {"provider": "github", "code":  query.get("code") };
 
     useEffect(() => {
         LoginOAuth(loginOAuth, loginOAuthCallback);
-        RequestData("pong", loginOAuthCallback);
     });
 
     return (
         <React.Fragment>
-         </React.Fragment>
+        </React.Fragment>
     )
 }
 

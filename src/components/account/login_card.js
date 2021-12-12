@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useState, useEffect} from 'react';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -7,8 +8,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import Logo from "./logo.png"
 import GitHubIcon from '@mui/icons-material/GitHub';
+import { RequestData } from './submit';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -56,12 +57,24 @@ export default function MediaControlCard() {
   const theme = useTheme();
   const classes = useStyles();
 
+  const [oauthUrl, setOAuthUrl] = useState("");
+
+  const oAuthInfoCallback = (resp) => {
+    console.log("resp", resp)
+    console.log("complete path", resp.result.complete_path)
+    setOAuthUrl(resp.result.complete_path)
+  }
+
+  useEffect(() => {
+    RequestData(`${process.env.REACT_APP_EUROPA_OAUTH_INFO}?provider=github`, oAuthInfoCallback)
+  }, []);
+
   return (
     <Card className={classes.cardSize} sx={{ display: 'flex'}}>
         <Box p={10} sx={{ display: 'flex'}}>
             <CardContent className={classes.cardContentSize} sx={{ display: 'flex', flexDirection: 'column', alignItems: "center", justifyContent: "center"  }}>
                 <Typography component="div">
-                    <Button style={{textTransform: 'none'}} loadingPosition="start" startIcon={<GitHubIcon />} href={process.env.REACT_APP_GITHUB_OAUTH_URL} variant="outlined">
+                    <Button style={{textTransform: 'none'}} startIcon={<GitHubIcon />} href={oauthUrl} variant="outlined">
                         GitHub 登录
                     </Button>
                 </Typography>
