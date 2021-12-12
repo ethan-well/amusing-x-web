@@ -1,14 +1,16 @@
 import React, { useState, useReducer, useEffect } from 'react';
 import { useLocation } from "react-router-dom";
 import {LoginOAuth, RequestData} from "./submit";
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 function useQuery() {
     const { search } = useLocation();
     return React.useMemo(() => new URLSearchParams(search), [search]);
-  }
+}
 
 export default function OAuth(props) {
     let query = useQuery();
+    let navigate = useNavigate();
 
     const [result, setValues] = useState({
         provider: '',
@@ -16,7 +18,11 @@ export default function OAuth(props) {
     });
 
     const loginOAuthCallback = (resp) => {
-        console.log(resp)
+        if (resp.succeed) {
+            navigate("/", resp);
+        } else {
+            navigate("/login", resp);
+        }
     }
 
     let loginOAuth = {"provider": "github", "code":  query.get("code") };

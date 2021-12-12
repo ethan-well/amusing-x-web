@@ -11,7 +11,6 @@ import Button from '@mui/material/Button';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { RequestData } from './submit';
 
-
 const useStyles = makeStyles((theme) => ({
     marginTop: {
       marginTop: theme.spacing(14)
@@ -53,15 +52,13 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
 
-export default function MediaControlCard() {
+export default function OAuthLoginCard() {
   const theme = useTheme();
   const classes = useStyles();
 
   const [oauthUrl, setOAuthUrl] = useState("");
 
   const oAuthInfoCallback = (resp) => {
-    console.log("resp", resp)
-    console.log("complete path", resp.result.complete_path)
     setOAuthUrl(resp.result.complete_path)
   }
 

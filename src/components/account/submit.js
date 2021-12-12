@@ -119,7 +119,6 @@ const LoginOAuth = (state, callback) => {
 
   let body = Object.create({});
   Object.keys(state).map(key => {
-    console.log(body[key]);
     if (key != `password_show`) {
       body[key] = state[key]
     }

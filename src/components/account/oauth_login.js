@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Header from '../header/header';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import MediaControlCard from "./login_card";
-import Paper from '@mui/material/Paper';
+import { useNavigate } from 'react-router-dom';
+import OAuthLoginCard from "./login_card";
 
 const useStyles = makeStyles((theme) => ({
   marginTop: {
@@ -52,7 +51,7 @@ export default function OAuthLogin() {
                 direction="row"
                 justifyContent="center"
                 alignItems="center">
-                <MediaControlCard/>
+                <OAuthLoginCard/>
             </Grid>
         </Grid>
     </React.Fragment>
