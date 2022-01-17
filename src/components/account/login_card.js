@@ -63,7 +63,7 @@ export default function OAuthLoginCard() {
   }
 
   useEffect(() => {
-    RequestData(`${process.env.REACT_APP_EUROPA_OAUTH_INFO}?provider=github`, oAuthInfoCallback)
+    RequestData(`${process.env.REACT_APP_EUROPA_OAUTH_INFO}?provider=github&service=amusingx`, oAuthInfoCallback)
   }, []);
 
   return (

@@ -3,7 +3,6 @@ import Home from "../components/home/home";
 import JoinContainer from "../container/account/JoinContainer";
 import Login from "../components/account/login";
 import FindPasswordContainer from "../components/account/find_password";
-import Join from "../components/account/join";
 import OAuth from "../components/account/oauth";
 import OAuthLogin from "../components/account/oauth_login";
 

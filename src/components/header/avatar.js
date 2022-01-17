@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import ReactDOM, { findDOMNode } from 'react-dom'
+import React, { useState} from 'react';
+import { findDOMNode } from 'react-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import { deepOrange, deepPurple } from '@material-ui/core/colors';
@@ -47,7 +47,7 @@ export default function AMAvatars() {
         <Avatar className={classes.purple}>X</Avatar>
       </div>
 
-      <OperateListNew show={operateListShow} ref={ref} />
+      <OperateListNew show={operateListShow} ref={ref}/>
     </React.Fragment>
   );
 }

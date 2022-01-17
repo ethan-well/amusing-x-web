@@ -16,9 +16,15 @@ const useStyles = makeStyles((theme) => ({
 
 const  OperateListFunc =  function OperateList(props, ref) {
   const classes = useStyles();
+  const [show, setShow] = React.useState(true)
 
   const logoutCallback = (data) => {
     console.log(data);
+    if (data != null && data.succeed) {
+      setShow(false)
+    } else {
+      console.log("asdfadfasdf");
+    }
   }
 
   const logoutFunction = (e) => {
@@ -27,7 +33,7 @@ const  OperateListFunc =  function OperateList(props, ref) {
   }
 
   return (
-    props.show
+     props.show
     ?
     <Box ref={ref} className={classes.box} sx={{ border: 1, borderRadius: 2, borderColor: '#bdbdbd', width: '50%', maxWidth: 200, bgcolor: 'background.paper' }}>
       <nav aria-label="secondary mailbox folders">
