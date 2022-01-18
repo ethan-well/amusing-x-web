@@ -1,6 +1,6 @@
 import React from "react";
-import Header from '../header/header';
-import Body from '../body/body';
+import Header from "../header/header_new";
+import Body from "../body/body";
 
 export default function Home() {
   return (
@@ -8,5 +8,5 @@ export default function Home() {
       <Header />
       <Body />
     </React.Fragment>
-  )
+  );
 }
