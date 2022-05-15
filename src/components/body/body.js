@@ -1,9 +1,9 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { useState, useReducer, useEffect } from "react";
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
 import ImgMediaCard from "../card/card";
 import Grid from "@material-ui/core/Grid";
-import { RequestData } from '../account/submit';
+import { RequestData } from "../account/submit";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,7 +25,7 @@ function Body() {
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 20,
-  })
+  });
 
   // 获取表单校验正则
   const [products, setProducts] = useState({
@@ -37,7 +37,10 @@ function Body() {
     setProducts(data);
   };
   useEffect(() => {
-    RequestData(`v1/europa/product/sub_product/list?page=${pagination.page}&limit=${pagination.limit}`, getProductsCallback);
+    RequestData(
+      `v1/europa/product/sub_product/list?page=${pagination.page}&limit=${pagination.limit}`,
+      getProductsCallback
+    );
   }, []);
 
   return (
@@ -45,19 +48,17 @@ function Body() {
       <Grid
         container
         direction="row"
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
         spacing={3}
       >
-        <Grid item xs={4}>
-          <ImgMediaCard />
-        </Grid>
-        <Grid item className={classes.cardBox1} xs={4}>
-          <ImgMediaCard />
-        </Grid>
-        <Grid item className={classes.carBox2} xs={4}>
-          <ImgMediaCard />
-        </Grid>
+        {products.result && products.result.SubProducts
+          ? products.result.SubProducts.map((subProduct) => (
+              <Grid key={subProduct.subProductInfo.id} item xs={4}>
+                <ImgMediaCard />
+              </Grid>
+            ))
+          : "发生异常"}
       </Grid>
     </Container>
   );

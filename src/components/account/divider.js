@@ -15,12 +15,12 @@ export default function HeaderDividers(props) {
   const classes = useStyles();
 
   return (
-    <Grid container spacing={0} className={classes.root} direction="row" justify="center" alignItems="center">
+    <Grid container spacing={0} className={classes.root} direction="row" justifyContent="center" alignItems="center">
       <Grid item xs={5}>
         <Divider variant="middle" />
       </Grid>
 
-      <Grid container item direction="row" justify="center" alignItems="center" xs={2}>
+      <Grid container item direction="row" justifyContent="center" alignItems="center" xs={2}>
         <Grid item>
           <Typography variant="h4" gutterBottom>
             {props.name}

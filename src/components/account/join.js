@@ -371,7 +371,7 @@ export default function Join(props) {
           <Grid container
             className={classes.inputOuter}
             direction="row"
-            justify="flex-end"
+            justifyContent="flex-end"
             alignItems="center"
           >
             <Link

@@ -26,7 +26,7 @@ export default function MultilineTextFields() {
 
   return (
     <form noValidate autoComplete="off">
-      <Grid container direction="row" justify="space-between" alignItems="flex-end" spacing={1}>
+      <Grid container direction="row" justifyContent="space-between" alignItems="flex-end" spacing={1}>
         <Grid item xs={9}>
           <TextField
             id="standard-full-width"

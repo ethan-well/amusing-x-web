@@ -17,7 +17,7 @@ function Header() {
   return (
     <Grid container spacing={3} style={{ height: '15vh' }}>
       <Grid item xs={1}></Grid>
-      <Grid container justify="center" alignItems="center" item xs={3}>
+      <Grid container justifyContent="center" alignItems="center" item xs={3}>
         <Grid item xs={4}>
           <Link href="#" underline='none' align='center' display='block' onClick={handlleFunc} color="inherit">
             美食
@@ -34,14 +34,14 @@ function Header() {
           </Link>
         </Grid>
       </Grid>
-      <Grid container justify="center" alignItems="center" item xs={4}>
+      <Grid container justifyContent="center" alignItems="center" item xs={4}>
         <FormControl fullWidth size="small" variant="outlined">
           <InputLabel htmlFor="component-outlined">搜索</InputLabel>
           <OutlinedInput id="component-outlined" defaultValue={name} onChange={handlleFunc} label="Name" />
         </FormControl>
       </Grid>
-      <Grid container justify="center" alignItems="center" item xs={3}>
-        <Grid container item justify="center" direction="row" alignItems="center" xs={4}>
+      <Grid container justifyContent="center" alignItems="center" item xs={3}>
+        <Grid container item justifyContent="center" direction="row" alignItems="center" xs={4}>
           <Grid item>
             <AMAvatars />
           </Grid>

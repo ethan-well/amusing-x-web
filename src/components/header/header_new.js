@@ -30,11 +30,11 @@ function Header() {
   return (
     <Grid container spacing={3} style={{ height: "15vh" }}>
       <Grid item xs={1}></Grid>
-      <Grid container justify="center" alignItems="center" item xs={3}>
+      <Grid container justifyContent="center" alignItems="center" item xs={3}>
         <Grid
           container
           item
-          justify="center"
+          justifyContent="center"
           direction="row"
           alignItems="center"
           xs={4}
@@ -67,12 +67,12 @@ function Header() {
           ></Link>
         </Grid>
       </Grid>
-      <Grid container justify="center" alignItems="center" item xs={4}>
+      <Grid container justifyContent="center" alignItems="center" item xs={4}>
         <Typography variant="h3" component="div" gutterBottom>
           秒一下，很开心！
         </Typography>
       </Grid>
-      <Grid container justify="center" alignItems="center" item xs={3}>
+      <Grid container justifyContent="center" alignItems="center" item xs={3}>
         <Grid item xs={4}>
           <Link
             href="#"
@@ -96,7 +96,7 @@ function Header() {
         <Grid
           container
           item
-          justify="center"
+          justifyContent="center"
           direction="row"
           alignItems="center"
           xs={4}
