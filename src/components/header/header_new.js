@@ -9,6 +9,7 @@ import ImageListItem from "@mui/material/ImageListItem";
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@mui/material/Avatar";
 import { deepOrange, green } from "@mui/material/colors";
+import Typography from "@mui/material/Typography";
 
 const handleClick = () => {
   console.log("Click happened");
@@ -53,9 +54,7 @@ function Header() {
             display="block"
             onClick={handlleFunc}
             color="inherit"
-          >
-            资源
-          </Link>
+          ></Link>
         </Grid>
         <Grid item xs={4}>
           <Link
@@ -65,21 +64,13 @@ function Header() {
             display="block"
             onClick={handlleFunc}
             color="inherit"
-          >
-            问答
-          </Link>
+          ></Link>
         </Grid>
       </Grid>
       <Grid container justify="center" alignItems="center" item xs={4}>
-        <FormControl fullWidth size="small" variant="outlined">
-          <InputLabel htmlFor="component-outlined">搜索</InputLabel>
-          <OutlinedInput
-            id="component-outlined"
-            defaultValue={name}
-            onChange={handlleFunc}
-            label="Name"
-          />
-        </FormControl>
+        <Typography variant="h3" component="div" gutterBottom>
+          秒一下，很开心！
+        </Typography>
       </Grid>
       <Grid container justify="center" alignItems="center" item xs={3}>
         <Grid item xs={4}>
@@ -90,9 +81,7 @@ function Header() {
             display="block"
             onClick={handlleFunc}
             color="inherit"
-          >
-            项目
-          </Link>
+          ></Link>
         </Grid>
         <Grid item xs={4}>
           <Link
@@ -102,9 +91,7 @@ function Header() {
             display="block"
             onClick={handlleFunc}
             color="inherit"
-          >
-            方案
-          </Link>
+          ></Link>
         </Grid>
         <Grid
           container

@@ -17,7 +17,7 @@ import HeaderDividers from './divider';
 import { useNavigate } from 'react-router-dom';
 import VericationCodeApp from './verication_code';
 import JoinReducer from './joinReducer';
-import { SubmitResetpasswordForm, RequestData } from './submit'
+import { SubmitResetpasswordForm, RequestData } from './submit';
 
 const useStyles = makeStyles((theme) => ({
   marginTop: {
