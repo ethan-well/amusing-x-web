@@ -48,17 +48,17 @@ function Body() {
       <Grid
         container
         direction="row"
-        justifyContent="space-between"
+        // justifyContent="space-between"
         alignItems="center"
         spacing={3}
       >
         {products.result && products.result.SubProducts
           ? products.result.SubProducts.map((subProduct) => (
               <Grid key={subProduct.subProductInfo.id} item xs={4}>
-                <ImgMediaCard />
+                <ImgMediaCard subProductStr={JSON.stringify(subProduct)} id={subProduct.subProductInfo.id} name={subProduct.subProductInfo.name} desc={subProduct.subProductInfo.desc} />
               </Grid>
             ))
-          : "发生异常"}
+          : "加载中"}
       </Grid>
     </Container>
   );
