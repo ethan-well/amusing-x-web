@@ -45,7 +45,7 @@ function ImgMediaCard(props) {
   const [count, setCount] = useState(1);
   const [showTip, setShowTip] = useState(false);
   const [tip, setTip] = useState("");
-  const [pictures, setPictures] = useState({});
+  const [pictures, setPictures] = useState([{src: "loading"}]);
 
   const addCount = function () {
     if (count + 1 > subProduct.subProductInfo.max_num) {
@@ -75,7 +75,7 @@ function ImgMediaCard(props) {
   useEffect(() => {
     if (subProduct.subProductInfo.id >= 1) {
       RequestData(
-        `v1/europa/product/sub_product/pictures?sub_product_ids=9,11`,
+        `v1/europa/product/sub_product/pictures?sub_product_ids=${subProduct.subProductInfo.id}`,
         getProductsCallback
       );
     }
