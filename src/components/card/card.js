@@ -99,7 +99,7 @@ function ImgMediaCard(props) {
           <Typography variant="body2" color="textSecondary" component="p">
             {subProduct.subProductInfo.desc}
           </Typography>
-          {subProduct.Attributes.map((attr) => (
+          { subProduct.Attributes && subProduct.Attributes.map((attr) => (
             <p>
               {attr.Name} : {attr.AttrValue}
             </p>
