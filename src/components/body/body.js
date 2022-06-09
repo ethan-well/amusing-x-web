@@ -1,7 +1,7 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
-import ImgMediaCard from "../card/card";
+import ProductCard from "../card/card";
 import Grid from "@material-ui/core/Grid";
 import { RequestData } from "../account/submit";
 
@@ -55,7 +55,7 @@ function Body() {
         {products.result && products.result.SubProducts
           ? products.result.SubProducts.map((subProduct) => (
               <Grid key={subProduct.subProductInfo.id} item xs={4}>
-                <ImgMediaCard subProductStr={JSON.stringify(subProduct)} id={subProduct.subProductInfo.id} name={subProduct.subProductInfo.name} desc={subProduct.subProductInfo.desc} />
+                <ProductCard key={subProduct.subProductInfo.id} subProductStr={JSON.stringify(subProduct)} />
               </Grid>
             ))
           : "加载中"}

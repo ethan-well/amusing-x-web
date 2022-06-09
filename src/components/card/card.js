@@ -15,6 +15,7 @@ import Button from "@material-ui/core/Button";
 import { RequestData } from "../account/submit";
 import Tooltip from "@material-ui/core/Tooltip";
 import Zoom from "@material-ui/core/Zoom";
+import BuyButton from "./buyButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   price: {},
 }));
 
-function ImgMediaCard(props) {
+function ProductCard(props) {
   const classes = useStyles();
   const subProduct = JSON.parse(props.subProductStr);
   const [count, setCount] = useState(1);
@@ -75,7 +76,6 @@ function ImgMediaCard(props) {
   };
 
   const getProductsCallback = (data) => {
-    console.log("data: ", data);
     if (data && data.result && data.result.sub_product_pictures) {
       setPictures(data.result.sub_product_pictures[0].pictures);
     }
@@ -97,7 +97,6 @@ function ImgMediaCard(props) {
           component="img"
           alt="Contemplative Reptile"
           height="200"
-          // image={Image1}
           src={pictures[0].src}
           title="Contemplative Reptile"
         />
@@ -110,7 +109,7 @@ function ImgMediaCard(props) {
           </Typography>
           {subProduct.Attributes &&
             subProduct.Attributes.map((attr) => (
-              <p>
+              <p key={attr.ID}>
                 {attr.Name} : {attr.AttrValue}
               </p>
             ))}
@@ -148,9 +147,7 @@ function ImgMediaCard(props) {
             </Tooltip>
           </Grid>
           <Grid item container alignContent="center" xs={3}>
-            <Button variant="outlined" color="secondary">
-              购买
-            </Button>
+            <BuyButton subProductStr={props.subProductStr} count={count} />
           </Grid>
         </Grid>
       </CardActions>
@@ -158,4 +155,4 @@ function ImgMediaCard(props) {
   );
 }
 
-export default ImgMediaCard;
+export default ProductCard;
