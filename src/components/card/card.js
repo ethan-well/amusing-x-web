@@ -6,15 +6,15 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
-import Image1 from "./image1.jpeg";
 import { red } from "@material-ui/core/colors";
 import IconButton from "@material-ui/core/IconButton";
-import FavoriteIcon from "@material-ui/icons/Favorite";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { RequestData } from "../account/submit";
+import Tooltip from "@material-ui/core/Tooltip";
+import Zoom from "@material-ui/core/Zoom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,25 +43,34 @@ function ImgMediaCard(props) {
   const classes = useStyles();
   const subProduct = JSON.parse(props.subProductStr);
   const [count, setCount] = useState(1);
-  const [showTip, setShowTip] = useState(false);
-  const [tip, setTip] = useState("");
-  const [pictures, setPictures] = useState([{src: "loading"}]);
+  const [tipInfo, setTipInfo] = useState("");
+  const [pictures, setPictures] = useState([{ src: "loading" }]);
+
+  const [openMaxTip, setOpenMaxTip] = useState(false);
+  const [openMinTip, setOpenMinTip] = useState(false);
+
+  const closeTip = function () {
+    setOpenMaxTip(false);
+    setOpenMinTip(false);
+  };
 
   const addCount = function () {
     if (count + 1 > subProduct.subProductInfo.max_num) {
-      setTip("超过最大可售卖数量限制！");
-      setShowTip(true);
+      setTipInfo(`最多购买${subProduct.subProductInfo.max_num}件`);
+      setOpenMaxTip(true);
     } else {
       setCount(count + 1);
+      setOpenMaxTip(false);
     }
   };
 
   const removeCount = function () {
     if (count - 1 < subProduct.subProductInfo.min_num) {
-      setTip("数量小于最小售卖数量限制！");
-      setShowTip(true);
+      setTipInfo(`最少购买${subProduct.subProductInfo.min_num}件`);
+      setOpenMinTip(true);
     } else {
       setCount(count - 1);
+      setOpenMinTip(false);
     }
   };
 
@@ -99,11 +108,12 @@ function ImgMediaCard(props) {
           <Typography variant="body2" color="textSecondary" component="p">
             {subProduct.subProductInfo.desc}
           </Typography>
-          { subProduct.Attributes && subProduct.Attributes.map((attr) => (
-            <p>
-              {attr.Name} : {attr.AttrValue}
-            </p>
-          ))}
+          {subProduct.Attributes &&
+            subProduct.Attributes.map((attr) => (
+              <p>
+                {attr.Name} : {attr.AttrValue}
+              </p>
+            ))}
         </CardContent>
       </CardActionArea>
       <CardActions disableSpacing>
@@ -115,13 +125,27 @@ function ImgMediaCard(props) {
             <span class="value">{subProduct.subProductInfo.price}</span>
           </Grid>
           <Grid item xs={6}>
-            <IconButton aria-label="remove">
-              <RemoveIcon onClick={() => removeCount()} />
-            </IconButton>
+            <Tooltip
+              title={tipInfo}
+              TransitionComponent={Zoom}
+              placement="top"
+              open={openMinTip}
+            >
+              <IconButton onMouseLeave={closeTip} aria-label="remove">
+                <RemoveIcon onClick={() => removeCount()} />
+              </IconButton>
+            </Tooltip>
             <span>{count}</span>
-            <IconButton aria-label="add">
-              <AddIcon onClick={() => addCount()} />
-            </IconButton>
+            <Tooltip
+              title={tipInfo}
+              TransitionComponent={Zoom}
+              placement="top"
+              open={openMaxTip}
+            >
+              <IconButton onMouseLeave={closeTip} aria-label="add">
+                <AddIcon onClick={() => addCount()} />
+              </IconButton>
+            </Tooltip>
           </Grid>
           <Grid item container alignContent="center" xs={3}>
             <Button variant="outlined" color="secondary">
