@@ -1,5 +1,5 @@
-import React, { useState, useReducer, useEffect } from 'react';
-import { makeStyles, StylesProvider } from '@material-ui/core/styles';
+import React, { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Header from '../header/header';
@@ -16,7 +16,6 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import HeaderDividers from './divider';
 import { useNavigate } from 'react-router-dom';
 import VericationCodeApp from './verication_code';
-import JoinReducer from './joinReducer';
 import { SubmitResetpasswordForm, RequestData } from './submit';
 
 const useStyles = makeStyles((theme) => ({
